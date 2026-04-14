@@ -1,0 +1,37 @@
+site_name: Speck
+site_description: Speck - Sensor Analysis & Dust Mapping Utility
+site_author: devsimsek
+
+docs_dir: docs
+
+theme:
+  name: shadcn
+  show_title: true
+  show_stargazers: true
+  pygments_style:
+    light: shadcn-light
+    dark: github-dark
+  icon: heroicons:rocket-launch
+  topbar_sections: true
+  show_datetime: false
+
+repo_url: https://github.com/devsimsek/Speck
+repo_name: GitHub
+
+nav:
+  - Home: USAGE.md
+  - Architecture: ARCHITECTURE.md
+  - Changelog: CHANGELOG.md
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - fenced_code
+  - footnotes
+  - tables
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+
+plugins:
+  - search
