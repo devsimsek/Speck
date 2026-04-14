@@ -16,10 +16,10 @@ theme:
   show_datetime: false
 
 repo_url: https://github.com/devsimsek/Speck
-repo_name: GitHub
 
 nav:
-  - Home: USAGE.md
+  - Home: index.md
+  - Usage Guide: USAGE.md
   - Architecture: ARCHITECTURE.md
   - Changelog: CHANGELOG.md
 

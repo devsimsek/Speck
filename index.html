@@ -89,30 +89,138 @@
             border-color: var(--color-foam);
         }
 
+        /* Speck square slider */
+        input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 0;
+            height: 0;
+            opacity: 0;
+            margin: 0;
+            padding: 0;
+        }
+
         input[type="range"] {
-            accent-color: var(--color-rose);
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 14px;
+            background: transparent;
+            cursor: pointer;
+            border: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .speck-range {
+            width: 100%;
+            height: 14px;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 0;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .speck-range:focus {
+            outline: none;
+        }
+
+        .speck-range::-webkit-slider-runnable-track {
+            height: 8px;
+            background: var(--color-hl-high);
+            border: 1px solid var(--color-hl-med);
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        .speck-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none !important;
+            width: 18px;
+            height: 18px;
+            background: var(--color-rose) !important;
+            border: 1px solid var(--color-text) !important;
+            border-radius: 0 !important;
+            margin-top: -5px;
+            cursor: pointer;
+        }
+
+        .speck-range::-moz-range-track {
+            height: 8px;
+            background: var(--color-hl-high);
+            border: 1px solid var(--color-hl-med);
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        .speck-range::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: var(--color-rose) !important;
+            border: 1px solid var(--color-text) !important;
+            border-radius: 0 !important;
+            cursor: pointer;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        .speck-range::-moz-range-progress {
+            background: var(--color-hl-high);
+            height: 8px;
         }
 
         .grid-overlay {
-            /* Default (light mode): subtle dark lines */
-            background-image:
-                linear-gradient(to right, rgba(0,0,0,0.06) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(0,0,0,0.06) 1px, transparent 1px);
-            background-size: 48px 48px;
-            opacity: 1;
+            position: absolute;
+            inset: 0;
             pointer-events: none;
-            mix-blend-mode: overlay;
-            z-index: 5;
+            z-index: 30;
+            opacity: 1;
+            background-image:
+                /* minor vertical: dark + light pair (always visible) */
+                linear-gradient(to right, rgba(0, 0, 0, 0.45) 1px, transparent 1px),
+                linear-gradient(to right, rgba(255, 255, 255, 0.35) 1px, transparent 1px),
+                /* minor horizontal: dark + light pair (always visible) */
+                linear-gradient(to bottom, rgba(0, 0, 0, 0.45) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.35) 1px, transparent 1px),
+                /* major vertical every 5 cells */
+                linear-gradient(to right, rgba(0, 0, 0, 0.55) 1px, transparent 1px),
+                linear-gradient(to right, rgba(255, 255, 255, 0.5) 1px, transparent 1px),
+                /* major horizontal every 5 cells */
+                linear-gradient(to bottom, rgba(0, 0, 0, 0.55) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.5) 1px, transparent 1px);
+            background-size:
+                40px 40px,
+                40px 40px,
+                40px 40px,
+                40px 40px,
+                200px 200px,
+                200px 200px,
+                200px 200px,
+                200px 200px;
+            background-position:
+                0 0,
+                1px 1px,
+                0 0,
+                1px 1px,
+                0 0,
+                1px 1px,
+                0 0,
+                1px 1px;
+            mix-blend-mode: normal;
         }
-        /* Dark mode: subtle light lines */
+
         .dark .grid-overlay {
             background-image:
-                linear-gradient(to right, rgba(255,255,255,0.06) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255,255,255,0.06) 1px, transparent 1px);
-            background-size: 48px 48px;
-            opacity: 0.6;
+                linear-gradient(to right, rgba(0, 0, 0, 0.45) 1px, transparent 1px),
+                linear-gradient(to right, rgba(255, 255, 255, 0.35) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 0, 0, 0.45) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.35) 1px, transparent 1px),
+                linear-gradient(to right, rgba(0, 0, 0, 0.55) 1px, transparent 1px),
+                linear-gradient(to right, rgba(255, 255, 255, 0.5) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 0, 0, 0.55) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.5) 1px, transparent 1px);
             mix-blend-mode: normal;
-            z-index: 5;
         }
 
         /* Hide scrollbar for workspace */
@@ -207,7 +315,7 @@
                 <!-- EXIF Info -->
                 <div class="space-y-2 text-[13px]" x-show="exifInfo && (exifInfo.camera || exifInfo.lens || exifInfo.settings)">
                     <label class="block text-[13px] font-bold uppercase tracking-widest text-subtle">Image EXIF</label>
-                    <div class="bg-overlay p-3 border border-hl-high space-y-2 text-text">
+                    <div class="bg-overlay p-3 border border-hl-med space-y-2 text-text">
                         <p x-show="exifInfo && exifInfo.camera"><span class="font-semibold text-text">Camera:</span> <span x-text="exifInfo?.camera" class="text-text/80"></span></p>
                         <p x-show="exifInfo && exifInfo.lens"><span class="font-semibold text-text">Lens:</span> <span x-text="exifInfo?.lens" class="text-text/80"></span></p>
                         <p x-show="exifInfo && exifInfo.settings"><span class="font-semibold text-text">Settings:</span> <span x-text="exifInfo?.settings" class="text-text/80"></span></p>
@@ -226,11 +334,11 @@
                     </div>
 
                     <div class="space-y-4" :class="!visualize ? 'opacity-50 pointer-events-none' : ''">
-                        <div class="flex justify-between text-[15px] text-subtle">
+                        <div class="flex justify-between text-[15px] text-text">
                             <span>Sensitivity</span>
                             <span x-text="sensitivity + '%'"></span>
                         </div>
-                        <input type="range" min="200" max="1000" step="10" x-model="sensitivity" class="w-full h-2 bg-hl-high appearance-none cursor-pointer outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:bg-rose [&::-webkit-slider-thumb]:rounded-full! [&::-webkit-slider-thumb]:shadow-md [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:bg-rose [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:rounded-full! [&::-moz-range-thumb]:shadow-md">
+                        <input type="range" min="200" max="1000" step="10" x-model="sensitivity" class="speck-range">
                     </div>
                 </div>
 
@@ -242,24 +350,24 @@
 
                     <div class="space-y-4">
                         <label class="flex items-center space-x-3 cursor-pointer group">
-                            <div class="relative flex items-center justify-center w-5 h-5">
-                                <input type="checkbox" x-model="showGrid" class="peer appearance-none w-5 h-5 bg-hl-high border border-hl-high rounded-sm! cursor-pointer transition-all checked:bg-rose checked:border-rose">
-                                <svg class="absolute w-3.5 h-3.5 pointer-events-none opacity-0 peer-checked:opacity-100 text-base text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            <div class="relative flex items-center justify-center w-5 h-5 border transition-colors" :class="showGrid ? 'bg-rose border-rose' : 'bg-overlay border-hl-med'">
+                                <input type="checkbox" x-model="showGrid" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer appearance-none">
+                                <svg class="absolute w-3.5 h-3.5 pointer-events-none text-base" :class="showGrid ? 'opacity-100' : 'opacity-0'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                             </div>
                             <span class="text-[15px] text-text group-hover:font-semibold transition-all">Grid Overlay</span>
                         </label>
 
                         <label class="flex items-center space-x-3 cursor-pointer group">
-                            <div class="relative flex items-center justify-center w-5 h-5">
-                                <input type="checkbox" x-model="mappingMode" class="peer appearance-none w-5 h-5 bg-hl-high border border-hl-high rounded-sm! cursor-pointer transition-all checked:bg-love checked:border-love">
-                                <svg class="absolute w-3.5 h-3.5 pointer-events-none opacity-0 peer-checked:opacity-100 text-base text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            <div class="relative flex items-center justify-center w-5 h-5 border transition-colors" :class="mappingMode ? 'bg-love border-love' : 'bg-overlay border-hl-med'">
+                                <input type="checkbox" x-model="mappingMode" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer appearance-none">
+                                <svg class="absolute w-3.5 h-3.5 pointer-events-none text-base" :class="mappingMode ? 'opacity-100' : 'opacity-0'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                             </div>
                             <span class="text-[15px] text-text group-hover:font-semibold transition-all">Dust Mapping Mode</span>
                         </label>
                     </div>
 
                     <div class="flex space-x-3 pt-2" :class="markers.length === 0 ? 'opacity-50 pointer-events-none' : ''">
-                        <button @click="clearMarkers" class="flex-1 py-2.5 bg-hl-med border border-hl-high text-text hover:bg-hl-high transition-colors text-[14px] font-medium">Clear Map</button>
+                        <button @click="clearMarkers" class="flex-1 py-2.5 bg-overlay border border-hl-med text-text hover:bg-hl-high transition-colors text-[14px] font-semibold">Clear Map</button>
                         <button @click="exportMap" class="flex-1 py-2.5 bg-rose border border-rose text-white hover:bg-love transition-colors text-[14px] font-medium font-semibold">Export JPEG</button>
                     </div>
                 </div>
@@ -269,7 +377,7 @@
                 <!-- Utilities -->
                 <div class="space-y-6">
                     <label class="block text-[13px] font-bold uppercase tracking-widest text-subtle">Utilities</label>
-                    <button @click="lightScreenOpen = true" class="w-full text-[15px] text-left flex justify-between items-center bg-overlay border border-hl-high p-3 hover:bg-hl-high transition-all text-text group font-medium">
+                    <button @click="lightScreenOpen = true" class="w-full text-[15px] text-left flex justify-between items-center bg-overlay border border-hl-med p-3 hover:bg-hl-high transition-all text-text group font-medium">
                         Light Screen Mode
                         <span class="text-text group-hover:translate-x-0.5 transition-transform">→</span>
                     </button>
@@ -299,6 +407,8 @@
                  class="absolute transform-gpu origin-top-left"
                  :style="`transform: translate(${panX}px, ${panY}px) scale(${zoom}); width: ${imageWidth}px; height: ${imageHeight}px;`">
 
+                <div x-show="showGrid" class="grid-overlay pointer-events-none"></div>
+
                 <img x-ref="canvasImage"
                      :src="imageSrc"
                      class="w-full h-full object-contain pointer-events-none"
@@ -306,7 +416,6 @@
                      @load="onImageLoad">
 
                 <!-- Grid Overlay -->
-                <div x-show="showGrid" class="absolute inset-0 grid-overlay"></div>
 
                 <!-- Click Layer for Mapping -->
                 <div class="absolute inset-0 z-10"
@@ -337,62 +446,63 @@
          class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-surface/90 backdrop-blur-sm p-4"
          x-transition.opacity
          @keydown.window="handleLightScreenKeys"
+         @keydown.escape.window="lightScreenOpen = false"
          tabindex="0"
          x-effect="if(lightScreenOpen) $el.focus()">
-        
+
         <!-- Setup Tab -->
-        <div class="w-full max-w-md bg-surface border border-hl-high shadow-2xl p-6 space-y-6 relative">
+        <div class="w-full max-w-md bg-surface border border-hl-med shadow-2xl p-6 space-y-6 relative">
             <button @click="lightScreenOpen = false" class="absolute top-4 right-4 text-text hover:text-love transition-colors">✕</button>
             <h2 class="text-xl font-bold text-text">Light Screen Configuration</h2>
-            
+
             <div class="space-y-4">
                 <div class="flex items-center space-x-4">
                     <label class="w-8 font-mono text-text font-bold">R</label>
-                    <input type="range" min="0" max="255" x-model="lsR" class="flex-1 h-2 bg-hl-high appearance-none outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:bg-rose [&::-webkit-slider-thumb]:rounded-full! [&::-webkit-slider-thumb]:shadow-md [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:bg-rose [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:rounded-full!">
+                    <input type="range" min="0" max="255" x-model="lsR" class="flex-1 h-2 bg-hl-high outline-none appearance-none -webkit-appearance-none [&::-webkit-slider-thumb]:appearance-none! [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-rose [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-hl-med [&::-webkit-slider-thumb]:rounded-none [&::-webkit-slider-thumb]:-webkit-appearance-none [&::-moz-range-thumb]:appearance-none! [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:bg-rose [&::-moz-range-thumb]:border [&::-moz-range-thumb]:border-hl-med [&::-moz-range-thumb]:rounded-none">
                     <span class="w-8 text-right font-mono text-sm text-text font-bold" x-text="lsR"></span>
                 </div>
                 <div class="flex items-center space-x-4">
                     <label class="w-8 font-mono text-text font-bold">G</label>
-                    <input type="range" min="0" max="255" x-model="lsG" class="flex-1 h-2 bg-hl-high appearance-none outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:bg-foam [&::-webkit-slider-thumb]:rounded-full! [&::-webkit-slider-thumb]:shadow-md [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:bg-foam [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:rounded-full!">
+                    <input type="range" min="0" max="255" x-model="lsG" class="flex-1 h-2 bg-hl-high outline-none appearance-none -webkit-appearance-none [&::-webkit-slider-thumb]:appearance-none! [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-foam [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-hl-med [&::-webkit-slider-thumb]:rounded-none [&::-webkit-slider-thumb]:-webkit-appearance-none [&::-moz-range-thumb]:appearance-none! [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:bg-foam [&::-moz-range-thumb]:border [&::-moz-range-thumb]:border-hl-med [&::-moz-range-thumb]:rounded-none">
                     <span class="w-8 text-right font-mono text-sm text-text font-bold" x-text="lsG"></span>
                 </div>
                 <div class="flex items-center space-x-4">
                     <label class="w-8 font-mono text-text font-bold">B</label>
-                    <input type="range" min="0" max="255" x-model="lsB" class="flex-1 h-2 bg-hl-high appearance-none outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:bg-iris [&::-webkit-slider-thumb]:rounded-full! [&::-webkit-slider-thumb]:shadow-md [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:bg-iris [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:rounded-full!">
+                    <input type="range" min="0" max="255" x-model="lsB" class="flex-1 h-2 bg-hl-high outline-none appearance-none -webkit-appearance-none [&::-webkit-slider-thumb]:appearance-none! [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-iris [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-hl-med [&::-webkit-slider-thumb]:rounded-none [&::-webkit-slider-thumb]:-webkit-appearance-none [&::-moz-range-thumb]:appearance-none! [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:bg-iris [&::-moz-range-thumb]:border [&::-moz-range-thumb]:border-hl-med [&::-moz-range-thumb]:rounded-none">
                     <span class="w-8 text-right font-mono text-sm text-text font-bold" x-text="lsB"></span>
                 </div>
             </div>
-            
+
             <div class="grid grid-cols-2 gap-2">
-                <button @click="lsR=255; lsG=255; lsB=255" class="py-2 bg-overlay border border-hl-high text-sm hover:bg-hl-high transition-colors text-text font-medium">Pure White</button>
-                <button @click="lsR=0; lsG=0; lsB=0" class="py-2 bg-overlay border border-hl-high text-sm hover:bg-hl-high transition-colors text-text font-medium">Pure Black</button>
+                <button @click="lsR=255; lsG=255; lsB=255" class="py-2 bg-overlay border border-hl-med text-sm hover:bg-hl-high transition-colors text-text font-semibold">Pure White</button>
+                <button @click="lsR=0; lsG=0; lsB=0" class="py-2 bg-overlay border border-hl-med text-sm hover:bg-hl-high transition-colors text-text font-semibold">Pure Black</button>
             </div>
-            
+
             <button @click="lsActive = true" class="w-full py-3 bg-pine text-white font-bold hover:bg-foam transition-all mt-4 text-lg">Start Light Panel</button>
         </div>
 
         <!-- Active Light Panel -->
-        <div x-show="lsActive" 
+        <div x-show="lsActive"
              class="absolute inset-0 z-40 flex flex-col"
              :style="`background-color: rgb(${lsR}, ${lsG}, ${lsB});`">
-            
+
             <div class="absolute inset-x-0 bottom-0 p-4 md:p-8 bg-black/50 text-white opacity-0 hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center space-y-6"
                  @mouseenter="showLsControls = true" @mouseleave="showLsControls = false">
-                
+
                 <div class="w-full max-w-xl space-y-4 hidden md:block">
                     <div class="flex items-center space-x-4">
                         <label class="w-8 font-mono">R</label>
-                        <input type="range" min="0" max="255" x-model="lsR" class="flex-1 h-2 bg-gray-600 appearance-none rounded-none accent-red-500">
+                        <input type="range" min="0" max="255" x-model="lsR" class="flex-1 h-2 bg-gray-600 rounded-none accent-red-500">
                         <span class="w-8 text-right font-mono text-sm" x-text="lsR"></span>
                     </div>
                     <div class="flex items-center space-x-4">
                         <label class="w-8 font-mono">G</label>
-                        <input type="range" min="0" max="255" x-model="lsG" class="flex-1 h-2 bg-gray-600 appearance-none rounded-none accent-green-500">
+                        <input type="range" min="0" max="255" x-model="lsG" class="flex-1 h-2 bg-gray-600 rounded-none accent-green-500">
                         <span class="w-8 text-right font-mono text-sm" x-text="lsG"></span>
                     </div>
                     <div class="flex items-center space-x-4">
                         <label class="w-8 font-mono">B</label>
-                        <input type="range" min="0" max="255" x-model="lsB" class="flex-1 h-2 bg-gray-600 appearance-none rounded-none accent-blue-500">
+                        <input type="range" min="0" max="255" x-model="lsB" class="flex-1 h-2 bg-gray-600 rounded-none accent-blue-500">
                         <span class="w-8 text-right font-mono text-sm" x-text="lsB"></span>
                     </div>
                 </div>
@@ -407,7 +517,7 @@
                     <button @click="lightScreenOpen = false; lsActive = false" class="px-3 md:px-4 py-2 border border-red-500/50 text-red-300 hover:bg-red-500 hover:text-white text-xs md:text-sm font-bold ml-2">Exit (Esc)</button>
                 </div>
             </div>
-            
+
             <div class="absolute top-4 right-4 text-white/50 text-xs tracking-widest uppercase pointer-events-none" x-show="!showLsControls">
                 Tap/Move to bottom for controls
             </div>
@@ -415,9 +525,9 @@
     </div>
 
     <!-- About & Changelog Modal -->
-    <div x-show="showAboutModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" @click="showAboutModal = false">
-        <div class="bg-surface border border-hl-high w-full max-w-2xl max-h-[80vh] rounded-none overflow-hidden flex flex-col shadow-2xl" @click.stop>
-            <div class="border-b border-hl-high p-6 flex justify-between items-center">
+    <div x-show="showAboutModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" @click="showAboutModal = false" @keydown.escape.window="showAboutModal = false">
+        <div class="bg-surface border border-hl-med w-full max-w-2xl max-h-[80vh] rounded-none overflow-hidden flex flex-col shadow-2xl" @click.stop>
+            <div class="border-b border-hl-med p-6 flex justify-between items-center">
                 <h2 class="text-2xl font-bold text-text">About Speck</h2>
                 <button @click="showAboutModal = false" class="text-text hover:text-love transition-colors text-2xl">✕</button>
             </div>
@@ -438,12 +548,20 @@
                         <li>Offline-capable Progressive Web App</li>
                     </ul>
                 </div>
-                <div x-show="aboutContent" class="border-t border-hl-high pt-4">
+                <div>
+                    <h4 class="font-bold text-lg mb-2">Camera Sensor Cleaning</h4>
+                    <p class="text-sm text-text/80 mb-3">For comprehensive guidance on safely cleaning your camera sensor, check out this excellent tutorial by Nigel Danson:</p>
+                    <a href="https://www.youtube.com/watch?v=b-7ciRxh6s8" target="_blank" class="inline-block bg-pine text-white px-3 py-2 text-sm font-medium hover:bg-foam transition-colors">
+                        Watch: How to Clean Your Camera Sensor Safely
+                    </a>
+                    <p class="text-xs text-text/60 mt-2">Credit: Nigel Danson - Photography Education & Tutorials</p>
+                </div>
+                <div x-show="aboutContent" class="border-t border-hl-med pt-4">
                     <div class="prose prose-sm text-text/80 max-w-none" x-html="aboutContent"></div>
                 </div>
-                <div class="flex space-x-3 pt-4 border-t border-hl-high">
+                <div class="flex space-x-3 pt-4 border-t border-hl-med">
                     <a href="https://github.com/devsimsek/Speck" target="_blank" class="flex-1 py-2 bg-pine text-white hover:bg-foam transition-colors text-center font-medium">GitHub Repository</a>
-                    <button @click="showAboutModal = false" class="flex-1 py-2 bg-overlay border border-hl-high text-text hover:bg-hl-high transition-colors font-medium">Close</button>
+                    <button @click="showAboutModal = false" class="flex-1 py-2 bg-overlay border border-hl-med text-text hover:bg-hl-high transition-colors font-semibold">Close</button>
                 </div>
             </div>
         </div>
