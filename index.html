@@ -419,6 +419,14 @@
                         <button @click="clearMarkers" class="flex-1 py-2.5 bg-overlay border border-hl-med text-text hover:bg-hl-high transition-colors text-[14px] font-semibold">Clear Map</button>
                         <button @click="exportMap" class="flex-1 py-2.5 bg-rose border border-rose text-white hover:bg-love transition-colors text-[14px] font-medium font-semibold">Export JPEG</button>
                     </div>
+
+                    <div class="flex space-x-3 pt-2" :class="markers.length === 0 ? 'opacity-50 pointer-events-none' : ''">
+                        <button @click="exportDustMapJSON" class="flex-1 py-2.5 bg-foam border border-foam text-base hover:bg-iris transition-colors text-[14px] font-semibold">Export JSON</button>
+                    </div>
+
+                    <div class="pt-2">
+                        <input type="file" accept=".json" @change="importDustMapJSON" class="block w-full text-[15px] text-text file:mr-4 file:py-2.5 file:px-4 file:border-0 file:text-[15px] file:font-semibold file:bg-pine file:text-white hover:file:opacity-90 cursor-pointer border border-hl-med p-0 bg-transparent transition-opacity">
+                    </div>
                 </div>
 
                 <hr class="border-hl">
@@ -620,7 +628,7 @@
         document.addEventListener('alpine:init', () => {
             Alpine.data('speckApp', () => ({
                 isDark: localStorage.getItem('speck_theme') !== 'light',
-                currentVersion: '1.1.0',
+                currentVersion: '1.2.0',
                 updateAvailable: localStorage.getItem('speck_update_applied') !== 'true',
                 showAboutModal: false,
                 aboutContent: null,
@@ -740,6 +748,73 @@
                     this.updateAvailable = false;
                     localStorage.setItem('speck_update_applied', 'true');
                     window.location.reload(true);
+                },
+
+                exportDustMapJSON() {
+                    if (this.markers.length === 0) return;
+                    
+                    const dustMapData = {
+                        version: '1.0',
+                        exportDate: new Date().toISOString(),
+                        image: {
+                            width: this.imageWidth,
+                            height: this.imageHeight,
+                            fileName: this.imageSrc ? this.imageSrc.split('/').pop() : 'image'
+                        },
+                        markers: this.markers.map(marker => ({
+                            x: marker.x,
+                            y: marker.y
+                        })),
+                        settings: {
+                            sensitivity: this.sensitivity,
+                            gridOverlay: this.showGrid
+                        }
+                    };
+
+                    const jsonString = JSON.stringify(dustMapData, null, 2);
+                    const blob = new Blob([jsonString], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `dust-map-${new Date().getTime()}.json`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                },
+
+                importDustMapJSON(event) {
+                    const file = event.target.files[0];
+                    if (!file) return;
+
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            const dustMapData = JSON.parse(e.target.result);
+                            
+                            if (!dustMapData.markers || !Array.isArray(dustMapData.markers)) {
+                                alert('Invalid dust map JSON file');
+                                return;
+                            }
+
+                            this.markers = dustMapData.markers.map(marker => ({
+                                x: marker.x,
+                                y: marker.y
+                            }));
+
+                            if (dustMapData.settings) {
+                                this.sensitivity = dustMapData.settings.sensitivity || this.sensitivity;
+                                this.showGrid = dustMapData.settings.gridOverlay !== undefined ? dustMapData.settings.gridOverlay : this.showGrid;
+                            }
+
+                            alert(`Successfully imported ${this.markers.length} marker(s)`);
+                            event.target.value = '';
+                        } catch (error) {
+                            alert('Error parsing dust map JSON: ' + error.message);
+                            event.target.value = '';
+                        }
+                    };
+                    reader.readAsText(file);
                 },
 
                 handleLightScreenKeys(e) {

@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-04-16
+### Added
+- Export dust map markers as JSON file with image metadata and settings.
+- Import dust map markers from previously saved JSON files.
+- Full dust map documentation workflow: drop markers, export JSON, and reimport for future reference.
+- Support for storing relative marker positions (percentage-based) to survive zoom and pan operations.
+
+### Changed
+- Dust Mapping UI now includes "Export JSON" and "Import JSON" options alongside existing export functionality.
+- Enhanced dust map workflow to allow users to document, save, and restore dust spots for comparative analysis.
+
 ## [1.1.0] - 2026-04-15
 ### Added
 - Color-coded RGB sliders in Light Screen Configuration (Red, Green, Blue thumbs).
