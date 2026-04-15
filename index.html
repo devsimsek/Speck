@@ -1,1021 +1,1627 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Speck - Sensor Analysis</title>
-    <link rel="manifest" href="manifest.json">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/exifr/dist/full.umd.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
-    <style>
-        :root {
-            /* Rosé Pine Dawn (Light) */
-            --color-base: #faf4ed;
-            --color-surface: #fffaf3;
-            --color-overlay: #f2e9e1;
-            --color-muted: #9893a5;
-            --color-subtle: #797593;
-            --color-text: #575279;
-            --color-love: #b4637a;
-            --color-gold: #ea9d34;
-            --color-rose: #d7827e;
-            --color-pine: #286983;
-            --color-foam: #56949f;
-            --color-iris: #907aa9;
-            --color-hl-low: #f4ebe8;
-            --color-hl-med: #dfdad9;
-            --color-hl-high: #cecacd;
-        }
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Speck - Sensor Analysis</title>
+        <link rel="manifest" href="manifest.json" />
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://cdn.jsdelivr.net/npm/exifr/dist/full.umd.js"></script>
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"
+        ></script>
+        <style>
+            :root {
+                /* Rosé Pine Dawn (Light) */
+                --color-base: #faf4ed;
+                --color-surface: #fffaf3;
+                --color-overlay: #f2e9e1;
+                --color-muted: #9893a5;
+                --color-subtle: #797593;
+                --color-text: #575279;
+                --color-love: #b4637a;
+                --color-gold: #ea9d34;
+                --color-rose: #d7827e;
+                --color-pine: #286983;
+                --color-foam: #56949f;
+                --color-iris: #907aa9;
+                --color-hl-low: #f4ebe8;
+                --color-hl-med: #dfdad9;
+                --color-hl-high: #cecacd;
+            }
 
-        .dark {
-            /* Rosé Pine Moon (Dark) */
-            --color-base: #232136;
-            --color-surface: #2a273f;
-            --color-overlay: #393552;
-            --color-muted: #6e6a86;
-            --color-subtle: #908caa;
-            --color-text: #e0def4;
-            --color-love: #eb6f92;
-            --color-gold: #f6c177;
-            --color-rose: #ea9a97;
-            --color-pine: #3e8fb0;
-            --color-foam: #9ccfd8;
-            --color-iris: #c4a7e7;
-            --color-hl-low: #2a283e;
-            --color-hl-med: #44415a;
-            --color-hl-high: #56526e;
-        }
+            .dark {
+                /* Rosé Pine Moon (Dark) */
+                --color-base: #232136;
+                --color-surface: #2a273f;
+                --color-overlay: #393552;
+                --color-muted: #6e6a86;
+                --color-subtle: #908caa;
+                --color-text: #e0def4;
+                --color-love: #eb6f92;
+                --color-gold: #f6c177;
+                --color-rose: #ea9a97;
+                --color-pine: #3e8fb0;
+                --color-foam: #9ccfd8;
+                --color-iris: #c4a7e7;
+                --color-hl-low: #2a283e;
+                --color-hl-med: #44415a;
+                --color-hl-high: #56526e;
+            }
 
-        body {
-            background-color: var(--color-base);
-            color: var(--color-text);
-            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            margin: 0;
-            overflow: hidden;
-        }
+            body {
+                background-color: var(--color-base);
+                color: var(--color-text);
+                font-family:
+                    ui-sans-serif,
+                    system-ui,
+                    -apple-system,
+                    BlinkMacSystemFont,
+                    "Segoe UI",
+                    Roboto,
+                    "Helvetica Neue",
+                    Arial,
+                    sans-serif;
+                margin: 0;
+                overflow: hidden;
+            }
 
-        * {
-            border-radius: 0 !important;
-        }
+            * {
+                border-radius: 0 !important;
+            }
 
-        .bg-surface { background-color: var(--color-surface); }
-        .bg-overlay { background-color: var(--color-overlay); }
-        .text-subtle { color: var(--color-subtle); }
-        .text-love { color: var(--color-love); }
-        .border-hl { border-color: var(--color-hl-med); }
+            .bg-surface {
+                background-color: var(--color-surface);
+            }
+            .bg-overlay {
+                background-color: var(--color-overlay);
+            }
+            .text-subtle {
+                color: var(--color-subtle);
+            }
+            .text-love {
+                color: var(--color-love);
+            }
+            .border-hl {
+                border-color: var(--color-hl-med);
+            }
 
-        .btn {
-            background-color: var(--color-overlay);
-            color: var(--color-text);
-            border: 1px solid var(--color-hl-med);
-            padding: 0.5rem 1rem;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
+            .btn {
+                background-color: var(--color-overlay);
+                color: var(--color-text);
+                border: 1px solid var(--color-hl-med);
+                padding: 0.5rem 1rem;
+                cursor: pointer;
+                transition: background-color 0.2s;
+            }
 
-        .btn:hover {
-            background-color: var(--color-hl-med);
-        }
+            .btn:hover {
+                background-color: var(--color-hl-med);
+            }
 
-        .btn-primary {
-            background-color: var(--color-pine);
-            color: #fff;
-            border-color: var(--color-pine);
-        }
+            .btn-primary {
+                background-color: var(--color-pine);
+                color: #fff;
+                border-color: var(--color-pine);
+            }
 
-        .btn-primary:hover {
-            background-color: var(--color-foam);
-            border-color: var(--color-foam);
-        }
+            .btn-primary:hover {
+                background-color: var(--color-foam);
+                border-color: var(--color-foam);
+            }
 
-        /* Speck square slider */
-        input[type="checkbox"] {
-            appearance: none;
-            -webkit-appearance: none;
-            width: 0;
-            height: 0;
-            opacity: 0;
-            margin: 0;
-            padding: 0;
-        }
+            /* Speck square slider */
+            input[type="checkbox"] {
+                appearance: none;
+                -webkit-appearance: none;
+                width: 0;
+                height: 0;
+                opacity: 0;
+                margin: 0;
+                padding: 0;
+            }
 
-        input[type="range"] {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 100%;
-            height: 14px;
-            background: transparent;
-            cursor: pointer;
-            border: none;
-            padding: 0;
-            margin: 0;
-        }
+            input[type="range"] {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 100%;
+                height: 14px;
+                background: transparent;
+                cursor: pointer;
+                border: none;
+                padding: 0;
+                margin: 0;
+            }
 
-        .speck-range {
-            width: 100%;
-            height: 14px;
-            background: transparent;
-            cursor: pointer;
-            border-radius: 0;
-            -webkit-appearance: none;
-            appearance: none;
-        }
+            .speck-range {
+                width: 100%;
+                height: 14px;
+                background: transparent;
+                cursor: pointer;
+                border-radius: 0;
+                -webkit-appearance: none;
+                appearance: none;
+            }
 
-        .speck-range:focus {
-            outline: none;
-        }
+            .speck-range:focus {
+                outline: none;
+            }
 
-        .speck-range::-webkit-slider-runnable-track {
-            height: 8px;
-            background: var(--color-hl-high);
-            border: 1px solid var(--color-hl-med);
-            border-radius: 0;
-            box-shadow: none;
-        }
+            .speck-range::-webkit-slider-runnable-track {
+                height: 8px;
+                background: var(--color-hl-high);
+                border: 1px solid var(--color-hl-med);
+                border-radius: 0;
+                box-shadow: none;
+            }
 
-        .speck-range::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none !important;
-            width: 14px;
-            height: 14px;
-            background: var(--color-rose) !important;
-            border: 1px solid var(--color-text) !important;
-            border-radius: 0;
-            margin-top: -3px;
-            cursor: pointer;
-        }
+            .speck-range::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                appearance: none !important;
+                width: 14px;
+                height: 14px;
+                background: var(--color-rose) !important;
+                border: 1px solid var(--color-text) !important;
+                border-radius: 0;
+                margin-top: -3px;
+                cursor: pointer;
+            }
 
-        .speck-range-r::-webkit-slider-thumb {
-            background: #ff6b6b !important;
-        }
+            .speck-range-r::-webkit-slider-thumb {
+                background: #ff6b6b !important;
+            }
 
-        .speck-range-g::-webkit-slider-thumb {
-            background: #51cf66 !important;
-        }
+            .speck-range-g::-webkit-slider-thumb {
+                background: #51cf66 !important;
+            }
 
-        .speck-range-b::-webkit-slider-thumb {
-            background: #4ecdc4 !important;
-        }
+            .speck-range-b::-webkit-slider-thumb {
+                background: #4ecdc4 !important;
+            }
 
-        .speck-range::-moz-range-track {
-            height: 8px;
-            background: var(--color-hl-high);
-            border: 1px solid var(--color-hl-med);
-            border-radius: 0;
-            box-shadow: none;
-        }
+            .speck-range::-moz-range-track {
+                height: 8px;
+                background: var(--color-hl-high);
+                border: 1px solid var(--color-hl-med);
+                border-radius: 0;
+                box-shadow: none;
+            }
 
-        .speck-range::-moz-range-thumb {
-            width: 14px;
-            height: 14px;
-            background: var(--color-rose) !important;
-            border: 1px solid var(--color-text) !important;
-            border-radius: 0;
-            cursor: pointer;
-            -moz-appearance: none;
-            appearance: none;
-        }
+            .speck-range::-moz-range-thumb {
+                width: 14px;
+                height: 14px;
+                background: var(--color-rose) !important;
+                border: 1px solid var(--color-text) !important;
+                border-radius: 0;
+                cursor: pointer;
+                -moz-appearance: none;
+                appearance: none;
+            }
 
-        .speck-range-r::-moz-range-thumb {
-            background: #ff6b6b !important;
-        }
+            .speck-range-r::-moz-range-thumb {
+                background: #ff6b6b !important;
+            }
 
-        .speck-range-g::-moz-range-thumb {
-            background: #51cf66 !important;
-        }
+            .speck-range-g::-moz-range-thumb {
+                background: #51cf66 !important;
+            }
 
-        .speck-range-b::-moz-range-thumb {
-            background: #4ecdc4 !important;
-        }
+            .speck-range-b::-moz-range-thumb {
+                background: #4ecdc4 !important;
+            }
 
-        .speck-range::-moz-range-progress {
-            background: var(--color-hl-high);
-            height: 8px;
-        }
+            .speck-range::-moz-range-progress {
+                background: var(--color-hl-high);
+                height: 8px;
+            }
 
-        /* RGB Slider Colors */
-        .speck-range-r::-webkit-slider-thumb {
-            background: #ff6b6b !important;
-        }
+            /* RGB Slider Colors */
+            .speck-range-r::-webkit-slider-thumb {
+                background: #ff6b6b !important;
+            }
 
-        .speck-range-r::-moz-range-thumb {
-            background: #ff6b6b !important;
-        }
+            .speck-range-r::-moz-range-thumb {
+                background: #ff6b6b !important;
+            }
 
-        .speck-range-g::-webkit-slider-thumb {
-            background: #51cf66 !important;
-        }
+            .speck-range-g::-webkit-slider-thumb {
+                background: #51cf66 !important;
+            }
 
-        .speck-range-g::-moz-range-thumb {
-            background: #51cf66 !important;
-        }
+            .speck-range-g::-moz-range-thumb {
+                background: #51cf66 !important;
+            }
 
-        .speck-range-b::-webkit-slider-thumb {
-            background: #4ecdc4 !important;
-        }
+            .speck-range-b::-webkit-slider-thumb {
+                background: #4ecdc4 !important;
+            }
 
-        .speck-range-b::-moz-range-thumb {
-            background: #4ecdc4 !important;
-        }
+            .speck-range-b::-moz-range-thumb {
+                background: #4ecdc4 !important;
+            }
 
-        .grid-overlay {
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            z-index: 30;
-            opacity: 1;
-            background-image:
+            .grid-overlay {
+                position: absolute;
+                inset: 0;
+                pointer-events: none;
+                z-index: 30;
+                opacity: 1;
+                background-image:
                 /* minor vertical: dark + light pair (always visible) */
-                linear-gradient(to right, rgba(0, 0, 0, 0.45) 1px, transparent 1px),
-                linear-gradient(to right, rgba(255, 255, 255, 0.35) 1px, transparent 1px),
-                /* minor horizontal: dark + light pair (always visible) */
-                linear-gradient(to bottom, rgba(0, 0, 0, 0.45) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.35) 1px, transparent 1px),
-                /* major vertical every 5 cells */
-                linear-gradient(to right, rgba(0, 0, 0, 0.55) 1px, transparent 1px),
-                linear-gradient(to right, rgba(255, 255, 255, 0.5) 1px, transparent 1px),
-                /* major horizontal every 5 cells */
-                linear-gradient(to bottom, rgba(0, 0, 0, 0.55) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.5) 1px, transparent 1px);
-            background-size:
-                40px 40px,
-                40px 40px,
-                40px 40px,
-                40px 40px,
-                200px 200px,
-                200px 200px,
-                200px 200px,
-                200px 200px;
-            background-position:
-                0 0,
-                1px 1px,
-                0 0,
-                1px 1px,
-                0 0,
-                1px 1px,
-                0 0,
-                1px 1px;
-            mix-blend-mode: normal;
-        }
+                    linear-gradient(
+                        to right,
+                        rgba(0, 0, 0, 0.45) 1px,
+                        transparent 1px
+                    ),
+                    linear-gradient(
+                        to right,
+                        rgba(255, 255, 255, 0.35) 1px,
+                        transparent 1px
+                    ),
+                    /* minor horizontal: dark + light pair (always visible) */
+                    linear-gradient(
+                            to bottom,
+                            rgba(0, 0, 0, 0.45) 1px,
+                            transparent 1px
+                        ),
+                    linear-gradient(
+                        to bottom,
+                        rgba(255, 255, 255, 0.35) 1px,
+                        transparent 1px
+                    ),
+                    /* major vertical every 5 cells */
+                    linear-gradient(
+                            to right,
+                            rgba(0, 0, 0, 0.55) 1px,
+                            transparent 1px
+                        ),
+                    linear-gradient(
+                        to right,
+                        rgba(255, 255, 255, 0.5) 1px,
+                        transparent 1px
+                    ),
+                    /* major horizontal every 5 cells */
+                    linear-gradient(
+                            to bottom,
+                            rgba(0, 0, 0, 0.55) 1px,
+                            transparent 1px
+                        ),
+                    linear-gradient(
+                        to bottom,
+                        rgba(255, 255, 255, 0.5) 1px,
+                        transparent 1px
+                    );
+                background-size:
+                    40px 40px,
+                    40px 40px,
+                    40px 40px,
+                    40px 40px,
+                    200px 200px,
+                    200px 200px,
+                    200px 200px,
+                    200px 200px;
+                background-position:
+                    0 0,
+                    1px 1px,
+                    0 0,
+                    1px 1px,
+                    0 0,
+                    1px 1px,
+                    0 0,
+                    1px 1px;
+                mix-blend-mode: normal;
+            }
 
-        .dark .grid-overlay {
-            background-image:
-                linear-gradient(to right, rgba(0, 0, 0, 0.45) 1px, transparent 1px),
-                linear-gradient(to right, rgba(255, 255, 255, 0.35) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(0, 0, 0, 0.45) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.35) 1px, transparent 1px),
-                linear-gradient(to right, rgba(0, 0, 0, 0.55) 1px, transparent 1px),
-                linear-gradient(to right, rgba(255, 255, 255, 0.5) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(0, 0, 0, 0.55) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.5) 1px, transparent 1px);
-            mix-blend-mode: normal;
-        }
+            .dark .grid-overlay {
+                background-image:
+                    linear-gradient(
+                        to right,
+                        rgba(0, 0, 0, 0.45) 1px,
+                        transparent 1px
+                    ),
+                    linear-gradient(
+                        to right,
+                        rgba(255, 255, 255, 0.35) 1px,
+                        transparent 1px
+                    ),
+                    linear-gradient(
+                        to bottom,
+                        rgba(0, 0, 0, 0.45) 1px,
+                        transparent 1px
+                    ),
+                    linear-gradient(
+                        to bottom,
+                        rgba(255, 255, 255, 0.35) 1px,
+                        transparent 1px
+                    ),
+                    linear-gradient(
+                        to right,
+                        rgba(0, 0, 0, 0.55) 1px,
+                        transparent 1px
+                    ),
+                    linear-gradient(
+                        to right,
+                        rgba(255, 255, 255, 0.5) 1px,
+                        transparent 1px
+                    ),
+                    linear-gradient(
+                        to bottom,
+                        rgba(0, 0, 0, 0.55) 1px,
+                        transparent 1px
+                    ),
+                    linear-gradient(
+                        to bottom,
+                        rgba(255, 255, 255, 0.5) 1px,
+                        transparent 1px
+                    );
+                mix-blend-mode: normal;
+            }
 
-        /* Hide scrollbar for workspace */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+            /* Hide scrollbar for workspace */
+            .no-scrollbar::-webkit-scrollbar {
+                display: none;
+            }
+            .no-scrollbar {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
 
-        .marker {
-            position: absolute;
-            width: 24px;
-            height: 24px;
-            border: 2px solid var(--color-love);
-            border-radius: 50% !important; /* Markers can be circular for visibility */
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-            box-shadow: 0 0 4px rgba(0,0,0,0.5);
-        }
+            .marker {
+                position: absolute;
+                width: 24px;
+                height: 24px;
+                border: 2px solid var(--color-love);
+                border-radius: 50% !important; /* Markers can be circular for visibility */
+                transform: translate(-50%, -50%);
+                pointer-events: none;
+                box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+            }
 
-        .marker::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 4px;
-            height: 4px;
-            background-color: var(--color-love);
-            border-radius: 50% !important;
-            transform: translate(-50%, -50%);
-        }
-    </style>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-        }
+            .marker::after {
+                content: "";
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 4px;
+                height: 4px;
+                background-color: var(--color-love);
+                border-radius: 50% !important;
+                transform: translate(-50%, -50%);
+            }
+        </style>
+        <script>
+            tailwind.config = {
+                darkMode: "class",
+            };
 
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').then(registration => {
-                    console.log('SW registered: ', registration);
-                }).catch(registrationError => {
-                    console.log('SW registration failed: ', registrationError);
+            if ("serviceWorker" in navigator) {
+                window.addEventListener("load", () => {
+                    navigator.serviceWorker
+                        .register("./sw.js")
+                        .then((registration) => {
+                            console.log("SW registered: ", registration);
+                        })
+                        .catch((registrationError) => {
+                            console.log(
+                                "SW registration failed: ",
+                                registrationError,
+                            );
+                        });
                 });
-            });
-        }
-    </script>
-</head>
-<body x-data="speckApp()" :class="isDark ? 'dark' : ''" class="h-screen w-screen flex flex-col antialiased selection:bg-[#ea9a97] selection:text-[#232136]">
-
-    <!-- Header -->
-    <header class="bg-surface border-b border-hl p-4 flex justify-between items-center z-10">
-        <div class="flex items-center space-x-4">
-            <h1 class="text-xl font-bold tracking-tight">Speck</h1>
-            <span class="text-subtle text-sm px-2 border-l border-hl hidden md:inline-block" x-show="shutterCount !== null">
-                Shutter Count: <strong x-text="shutterCount" class="text-text"></strong>
-            </span>
-        </div>
-        <div class="flex items-center space-x-2">
-            <div x-show="updateAvailable" class="text-xs bg-gold text-base px-2 py-1 flex items-center space-x-2 mr-2 cursor-pointer" @click="applyUpdate">
-                <span>Update Available!</span>
-                <span class="font-bold underline">Reload</span>
+            }
+        </script>
+    </head>
+    <body
+        x-data="speckApp()"
+        :class="isDark ? 'dark' : ''"
+        class="h-screen w-screen flex flex-col antialiased selection:bg-[#ea9a97] selection:text-[#232136]"
+    >
+        <!-- Header -->
+        <header
+            class="bg-surface border-b border-hl p-4 flex justify-between items-center z-10"
+        >
+            <div class="flex items-center space-x-4">
+                <h1 class="text-xl font-bold tracking-tight">Speck</h1>
+                <span
+                    class="text-subtle text-sm px-2 border-l border-hl hidden md:inline-block"
+                    x-show="shutterCount !== null"
+                >
+                    Shutter Count:
+                    <strong x-text="shutterCount" class="text-text"></strong>
+                </span>
             </div>
-            <button @click="showAboutModal = true" class="btn text-xs mr-2 hover:bg-hl-med transition-colors" title="About Speck">
-                v<span x-text="currentVersion"></span>
-            </button>
-            <button x-show="pwaPrompt" @click="installPWA" class="btn text-xs mr-2 bg-pine text-white hover:bg-foam transition-colors" title="Install Speck">
-                📱 Install
-            </button>
-            <button @click="toggleTheme" class="btn text-sm" title="Toggle Theme">
-                <span x-show="isDark">Dawn (Light)</span>
-                <span x-show="!isDark">Moon (Dark)</span>
-            </button>
-        </div>
-    </header>
-
-    <!-- Main Layout -->
-    <div class="flex-1 flex flex-col-reverse md:flex-row overflow-hidden">
-
-        <!-- Sidebar -->
-        <aside class="w-full md:w-[340px] h-[40%] md:h-auto bg-surface border-t md:border-t-0 md:border-r border-hl flex flex-col z-20 overflow-y-auto">
-            <div class="p-6 space-y-6">
-
-                <!-- File Input -->
-                <div class="space-y-4">
-                    <label class="block text-[13px] font-bold uppercase tracking-widest text-subtle">Image Source</label>
-                    <input type="file" accept="image/jpeg, image/png" @change="handleImageUpload" class="block w-full text-[15px] text-text file:mr-4 file:py-2.5 file:px-4 file:border-0 file:text-[15px] file:font-semibold file:bg-pine file:text-white hover:file:opacity-90 cursor-pointer border border-hl-med p-0 bg-transparent transition-opacity">
+            <div class="flex items-center space-x-2">
+                <div
+                    x-show="updateAvailable"
+                    class="text-xs bg-gold text-base px-2 py-1 flex items-center space-x-2 mr-2 cursor-pointer"
+                    @click="applyUpdate"
+                >
+                    <span>Update Available!</span>
+                    <span class="font-bold underline">Reload</span>
                 </div>
+                <button
+                    @click="showAboutModal = true"
+                    class="btn text-xs mr-2 hover:bg-hl-med transition-colors"
+                    title="About Speck"
+                >
+                    v<span x-text="currentVersion"></span>
+                </button>
+                <button
+                    x-show="pwaPrompt"
+                    @click="installPWA"
+                    class="btn text-xs mr-2 bg-pine text-white hover:bg-foam transition-colors"
+                    title="Install Speck"
+                >
+                    📱 Install
+                </button>
+                <button
+                    @click="toggleTheme"
+                    class="btn text-sm"
+                    title="Toggle Theme"
+                >
+                    <span x-show="isDark">Dawn (Light)</span>
+                    <span x-show="!isDark">Moon (Dark)</span>
+                </button>
+            </div>
+        </header>
 
-                <!-- EXIF Info -->
-                <div class="space-y-2 text-[13px]" x-show="exifInfo && (exifInfo.camera || exifInfo.lens || exifInfo.settings)">
-                    <label class="block text-[13px] font-bold uppercase tracking-widest text-subtle">Image EXIF</label>
-                    <div class="bg-overlay p-3 border border-hl-med space-y-2 text-text">
-                        <p x-show="exifInfo && exifInfo.camera"><span class="font-semibold text-text">Camera:</span> <span x-text="exifInfo?.camera" class="text-text/80"></span></p>
-                        <p x-show="exifInfo && exifInfo.lens"><span class="font-semibold text-text">Lens:</span> <span x-text="exifInfo?.lens" class="text-text/80"></span></p>
-                        <p x-show="exifInfo && exifInfo.settings"><span class="font-semibold text-text">Settings:</span> <span x-text="exifInfo?.settings" class="text-text/80"></span></p>
+        <!-- Main Layout -->
+        <div class="flex-1 flex flex-col-reverse md:flex-row overflow-hidden">
+            <!-- Sidebar -->
+            <aside
+                class="w-full md:w-[340px] h-[40%] md:h-auto bg-surface border-t md:border-t-0 md:border-r border-hl flex flex-col z-20 overflow-y-auto"
+            >
+                <div class="p-6 space-y-6">
+                    <!-- File Input -->
+                    <div class="space-y-4">
+                        <label
+                            class="block text-[13px] font-bold uppercase tracking-widest text-subtle"
+                            >Image Source</label
+                        >
+                        <input
+                            type="file"
+                            accept="image/jpeg, image/png"
+                            @change="handleImageUpload"
+                            class="block w-full text-[15px] text-text file:mr-4 file:py-2.5 file:px-4 file:border-0 file:text-[15px] file:font-semibold file:bg-pine file:text-white hover:file:opacity-90 cursor-pointer border border-hl-med p-0 bg-transparent transition-opacity"
+                        />
                     </div>
-                </div>
 
-                <hr class="border-hl">
+                    <!-- EXIF Info -->
+                    <div
+                        class="space-y-2 text-[13px]"
+                        x-show="exifInfo && (exifInfo.camera || exifInfo.lens || exifInfo.settings)"
+                    >
+                        <label
+                            class="block text-[13px] font-bold uppercase tracking-widest text-subtle"
+                            >Image EXIF</label
+                        >
+                        <div
+                            class="bg-overlay p-3 border border-hl-med space-y-2 text-text"
+                        >
+                            <p x-show="exifInfo && exifInfo.camera">
+                                <span class="font-semibold text-text"
+                                    >Camera:</span
+                                >
+                                <span
+                                    x-text="exifInfo?.camera"
+                                    class="text-text/80"
+                                ></span>
+                            </p>
+                            <p x-show="exifInfo && exifInfo.lens">
+                                <span class="font-semibold text-text"
+                                    >Lens:</span
+                                >
+                                <span
+                                    x-text="exifInfo?.lens"
+                                    class="text-text/80"
+                                ></span>
+                            </p>
+                            <p x-show="exifInfo && exifInfo.settings">
+                                <span class="font-semibold text-text"
+                                    >Settings:</span
+                                >
+                                <span
+                                    x-text="exifInfo?.settings"
+                                    class="text-text/80"
+                                ></span>
+                            </p>
+                        </div>
+                    </div>
 
-                <!-- Visualize Spots -->
-                <div class="space-y-6">
-                    <div class="flex items-center justify-between">
-                        <label class="block text-[13px] font-bold uppercase tracking-widest text-subtle">Visualize Spots</label>
-                        <button @click="visualize = !visualize" :class="visualize ? 'bg-pine text-white border-pine' : 'bg-overlay text-text border-hl'" class="border px-4 py-1.5 text-sm font-semibold transition-colors">
-                            <span x-text="visualize ? 'ON' : 'OFF'"></span>
+                    <hr class="border-hl" />
+
+                    <!-- Visualize Spots -->
+                    <div class="space-y-6">
+                        <div class="flex items-center justify-between">
+                            <label
+                                class="block text-[13px] font-bold uppercase tracking-widest text-subtle"
+                                >Visualize Spots</label
+                            >
+                            <button
+                                @click="visualize = !visualize"
+                                :class="visualize ? 'bg-pine text-white border-pine' : 'bg-overlay text-text border-hl'"
+                                class="border px-4 py-1.5 text-sm font-semibold transition-colors"
+                            >
+                                <span x-text="visualize ? 'ON' : 'OFF'"></span>
+                            </button>
+                        </div>
+
+                        <div
+                            class="space-y-4"
+                            :class="!visualize ? 'opacity-50 pointer-events-none' : ''"
+                        >
+                            <div
+                                class="flex justify-between text-[15px] text-text"
+                            >
+                                <span>Sensitivity</span>
+                                <span x-text="sensitivity + '%'"></span>
+                            </div>
+                            <input
+                                type="range"
+                                min="0"
+                                max="2000"
+                                step="10"
+                                x-model="sensitivity"
+                                class="speck-range"
+                            />
+                        </div>
+                    </div>
+
+                    <hr class="border-hl" />
+
+                    <!-- Overlays & Mapping -->
+                    <div class="space-y-6">
+                        <label
+                            class="block text-[13px] font-bold uppercase tracking-widest text-subtle"
+                            >Overlays & Mapping</label
+                        >
+
+                        <div class="space-y-4">
+                            <label
+                                class="flex items-center space-x-3 cursor-pointer group"
+                            >
+                                <div
+                                    class="relative flex items-center justify-center w-5 h-5 border transition-colors"
+                                    :class="showGrid ? 'bg-rose border-rose' : 'bg-overlay border-hl-med'"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        x-model="showGrid"
+                                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer appearance-none"
+                                    />
+                                    <svg
+                                        class="absolute w-3.5 h-3.5 pointer-events-none text-base"
+                                        :class="showGrid ? 'opacity-100' : 'opacity-0'"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                    >
+                                        <path
+                                            fill-rule="evenodd"
+                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                            clip-rule="evenodd"
+                                        />
+                                    </svg>
+                                </div>
+                                <span
+                                    class="text-[15px] text-text group-hover:font-semibold transition-all"
+                                    >Grid Overlay</span
+                                >
+                            </label>
+
+                            <label
+                                class="flex items-center space-x-3 cursor-pointer group"
+                            >
+                                <div
+                                    class="relative flex items-center justify-center w-5 h-5 border transition-colors"
+                                    :class="mappingMode ? 'bg-love border-love' : 'bg-overlay border-hl-med'"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        x-model="mappingMode"
+                                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer appearance-none"
+                                    />
+                                    <svg
+                                        class="absolute w-3.5 h-3.5 pointer-events-none text-base"
+                                        :class="mappingMode ? 'opacity-100' : 'opacity-0'"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                    >
+                                        <path
+                                            fill-rule="evenodd"
+                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                            clip-rule="evenodd"
+                                        />
+                                    </svg>
+                                </div>
+                                <span
+                                    class="text-[15px] text-text group-hover:font-semibold transition-all"
+                                    >Dust Mapping Mode</span
+                                >
+                            </label>
+                        </div>
+
+                        <div
+                            class="flex space-x-3 pt-2"
+                            :class="markers.length === 0 ? 'opacity-50 pointer-events-none' : ''"
+                        >
+                            <button
+                                @click="clearMarkers"
+                                class="flex-1 py-2.5 bg-overlay border border-hl-med text-text hover:bg-hl-high transition-colors text-[14px] font-semibold"
+                            >
+                                Clear Map
+                            </button>
+                            <button
+                                @click="exportMap"
+                                class="flex-1 py-2.5 bg-rose border border-rose text-white hover:bg-love transition-colors text-[14px] font-medium font-semibold"
+                            >
+                                Export JPEG
+                            </button>
+                        </div>
+
+                        <div
+                            class="flex space-x-3 pt-2"
+                            :class="markers.length === 0 ? 'opacity-50 pointer-events-none' : ''"
+                        >
+                            <button
+                                @click="exportDustMapJSON"
+                                class="flex-1 py-2.5 bg-foam border border-foam text-base hover:bg-iris transition-colors text-[14px] font-semibold"
+                            >
+                                Export JSON
+                            </button>
+                        </div>
+
+                        <div class="pt-2">
+                            <input
+                                type="file"
+                                accept=".json"
+                                @change="importDustMapJSON"
+                                class="block w-full text-[15px] text-text file:mr-4 file:py-2.5 file:px-4 file:border-0 file:text-[15px] file:font-semibold file:bg-pine file:text-white hover:file:opacity-90 cursor-pointer border border-hl-med p-0 bg-transparent transition-opacity"
+                            />
+                        </div>
+                    </div>
+
+                    <hr class="border-hl" />
+
+                    <!-- Utilities -->
+                    <div class="space-y-6">
+                        <label
+                            class="block text-[13px] font-bold uppercase tracking-widest text-subtle"
+                            >Utilities</label
+                        >
+                        <button
+                            @click="lightScreenOpen = true"
+                            class="w-full text-[15px] text-left flex justify-between items-center bg-overlay border border-hl-med p-3 hover:bg-hl-high transition-all text-text group font-medium"
+                        >
+                            Light Screen Mode
+                            <span
+                                class="text-text group-hover:translate-x-0.5 transition-transform"
+                                >→</span
+                            >
                         </button>
                     </div>
+                </div>
+            </aside>
 
-                    <div class="space-y-4" :class="!visualize ? 'opacity-50 pointer-events-none' : ''">
-                        <div class="flex justify-between text-[15px] text-text">
-                            <span>Sensitivity</span>
-                            <span x-text="sensitivity + '%'"></span>
+            <!-- Main Workspace -->
+            <main
+                class="flex-1 relative bg-base overflow-hidden no-scrollbar cursor-move"
+                @wheel.prevent="handleZoom"
+                @mousedown="startPan"
+                @mousemove="doPan"
+                @mouseup="endPan"
+                @mouseleave="endPan"
+                id="workspace"
+            >
+                <div
+                    x-show="!imageSrc"
+                    class="absolute inset-0 flex items-center justify-center text-subtle flex-col space-y-4 pointer-events-none"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-16 w-16 opacity-20"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="1"
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                    </svg>
+                    <p>Load an image to begin sensor analysis.</p>
+                </div>
+
+                <!-- Image Container -->
+                <div
+                    x-show="imageSrc"
+                    class="absolute transform-gpu origin-top-left"
+                    :style="`transform: translate(${panX}px, ${panY}px) scale(${zoom}); width: ${imageWidth}px; height: ${imageHeight}px;`"
+                >
+                    <div
+                        x-show="showGrid"
+                        class="grid-overlay pointer-events-none"
+                    ></div>
+
+                    <img
+                        x-ref="canvasImage"
+                        :src="imageSrc"
+                        class="w-full h-full object-contain pointer-events-none"
+                        :style="visualize ? `filter: grayscale(100%) invert(100%) contrast(${sensitivity}%);` : ''"
+                        @load="onImageLoad"
+                    />
+
+                    <!-- Grid Overlay -->
+
+                    <!-- Click Layer for Mapping -->
+                    <div
+                        class="absolute inset-0 z-10"
+                        :class="mappingMode ? 'cursor-crosshair pointer-events-auto' : 'pointer-events-none'"
+                        @click="addMarker"
+                    ></div>
+
+                    <!-- Markers -->
+                    <template x-for="(marker, index) in markers" :key="index">
+                        <div
+                            class="marker z-20"
+                            :style="`left: ${marker.x}%; top: ${marker.y}%; transform: translate(-50%, -50%) scale(${1/zoom});`"
+                        ></div>
+                    </template>
+                </div>
+
+                <!-- Zoom Controls HUD -->
+                <div
+                    class="absolute bottom-4 md:bottom-6 right-4 md:right-6 flex flex-col items-end space-y-2 z-10"
+                >
+                    <div class="flex space-x-2" x-show="imageSrc">
+                        <button
+                            @click="resetView"
+                            class="bg-surface border border-hl text-text px-3 py-1 text-xs opacity-80 hover:opacity-100 transition-opacity"
+                        >
+                            Reset View
+                        </button>
+                        <div
+                            class="bg-surface border border-hl px-3 py-1 flex items-center text-xs opacity-80 text-text"
+                        >
+                            <span x-text="Math.round(zoom * 100) + '%'"></span>
                         </div>
-                        <input type="range" min="0" max="2000" step="10" x-model="sensitivity" class="speck-range">
+                    </div>
+                    <div class="text-[10px] text-subtle opacity-70">
+                        &copy; devsimsek
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Light Screen Config & Fullscreen -->
+        <div
+            x-show="lightScreenOpen"
+            class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-surface/90 backdrop-blur-sm p-4"
+            x-transition.opacity
+            @keydown.window="handleLightScreenKeys"
+            @keydown.escape.window="lightScreenOpen = false"
+            tabindex="0"
+            x-effect="if(lightScreenOpen) $el.focus()"
+        >
+            <!-- Setup Tab -->
+            <div
+                class="w-full max-w-md bg-surface border border-hl-med shadow-2xl p-6 space-y-6 relative"
+            >
+                <button
+                    @click="lightScreenOpen = false"
+                    class="absolute top-4 right-4 text-text hover:text-love transition-colors"
+                >
+                    ✕
+                </button>
+                <h2 class="text-xl font-bold text-text">
+                    Light Screen Configuration
+                </h2>
+
+                <div class="space-y-4">
+                    <div class="flex items-center space-x-4">
+                        <label class="w-8 font-mono text-text font-bold"
+                            >R</label
+                        >
+                        <input
+                            type="range"
+                            min="0"
+                            max="255"
+                            x-model="lsB"
+                            class="flex-1 speck-range speck-range-r"
+                        />
+                        <span
+                            class="w-8 text-right font-mono text-sm text-text font-bold"
+                            x-text="lsR"
+                        ></span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <label class="w-8 font-mono text-text font-bold"
+                            >G</label
+                        >
+                        <input
+                            type="range"
+                            min="0"
+                            max="255"
+                            x-model="lsG"
+                            class="flex-1 speck-range speck-range-g"
+                        />
+                        <span
+                            class="w-8 text-right font-mono text-sm text-text font-bold"
+                            x-text="lsG"
+                        ></span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <label class="w-8 font-mono text-text font-bold"
+                            >B</label
+                        >
+                        <input
+                            type="range"
+                            min="0"
+                            max="255"
+                            x-model="lsB"
+                            class="flex-1 speck-range speck-range-b"
+                        />
+                        <span
+                            class="w-8 text-right font-mono text-sm text-text font-bold"
+                            x-text="lsB"
+                        ></span>
                     </div>
                 </div>
 
-                <hr class="border-hl">
-
-                <!-- Overlays & Mapping -->
-                <div class="space-y-6">
-                    <label class="block text-[13px] font-bold uppercase tracking-widest text-subtle">Overlays & Mapping</label>
-
-                    <div class="space-y-4">
-                        <label class="flex items-center space-x-3 cursor-pointer group">
-                            <div class="relative flex items-center justify-center w-5 h-5 border transition-colors" :class="showGrid ? 'bg-rose border-rose' : 'bg-overlay border-hl-med'">
-                                <input type="checkbox" x-model="showGrid" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer appearance-none">
-                                <svg class="absolute w-3.5 h-3.5 pointer-events-none text-base" :class="showGrid ? 'opacity-100' : 'opacity-0'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                            </div>
-                            <span class="text-[15px] text-text group-hover:font-semibold transition-all">Grid Overlay</span>
-                        </label>
-
-                        <label class="flex items-center space-x-3 cursor-pointer group">
-                            <div class="relative flex items-center justify-center w-5 h-5 border transition-colors" :class="mappingMode ? 'bg-love border-love' : 'bg-overlay border-hl-med'">
-                                <input type="checkbox" x-model="mappingMode" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer appearance-none">
-                                <svg class="absolute w-3.5 h-3.5 pointer-events-none text-base" :class="mappingMode ? 'opacity-100' : 'opacity-0'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                            </div>
-                            <span class="text-[15px] text-text group-hover:font-semibold transition-all">Dust Mapping Mode</span>
-                        </label>
-                    </div>
-
-                    <div class="flex space-x-3 pt-2" :class="markers.length === 0 ? 'opacity-50 pointer-events-none' : ''">
-                        <button @click="clearMarkers" class="flex-1 py-2.5 bg-overlay border border-hl-med text-text hover:bg-hl-high transition-colors text-[14px] font-semibold">Clear Map</button>
-                        <button @click="exportMap" class="flex-1 py-2.5 bg-rose border border-rose text-white hover:bg-love transition-colors text-[14px] font-medium font-semibold">Export JPEG</button>
-                    </div>
-
-                    <div class="flex space-x-3 pt-2" :class="markers.length === 0 ? 'opacity-50 pointer-events-none' : ''">
-                        <button @click="exportDustMapJSON" class="flex-1 py-2.5 bg-foam border border-foam text-base hover:bg-iris transition-colors text-[14px] font-semibold">Export JSON</button>
-                    </div>
-
-                    <div class="pt-2">
-                        <input type="file" accept=".json" @change="importDustMapJSON" class="block w-full text-[15px] text-text file:mr-4 file:py-2.5 file:px-4 file:border-0 file:text-[15px] file:font-semibold file:bg-pine file:text-white hover:file:opacity-90 cursor-pointer border border-hl-med p-0 bg-transparent transition-opacity">
-                    </div>
-                </div>
-
-                <hr class="border-hl">
-
-                <!-- Utilities -->
-                <div class="space-y-6">
-                    <label class="block text-[13px] font-bold uppercase tracking-widest text-subtle">Utilities</label>
-                    <button @click="lightScreenOpen = true" class="w-full text-[15px] text-left flex justify-between items-center bg-overlay border border-hl-med p-3 hover:bg-hl-high transition-all text-text group font-medium">
-                        Light Screen Mode
-                        <span class="text-text group-hover:translate-x-0.5 transition-transform">→</span>
+                <div class="grid grid-cols-2 gap-2">
+                    <button
+                        @click="lsR=255; lsG=255; lsB=255; lsActive = true"
+                        class="py-2 bg-overlay border border-hl-med text-sm hover:bg-hl-high transition-colors text-text font-semibold"
+                    >
+                        Pure White
+                    </button>
+                    <button
+                        @click="lsR=0; lsG=0; lsB=0"
+                        class="py-2 bg-overlay border border-hl-med text-sm hover:bg-hl-high transition-colors text-text font-semibold"
+                    >
+                        Pure Black
                     </button>
                 </div>
 
-            </div>
-        </aside>
-
-        <!-- Main Workspace -->
-        <main class="flex-1 relative bg-base overflow-hidden no-scrollbar cursor-move"
-              @wheel.prevent="handleZoom"
-              @mousedown="startPan"
-              @mousemove="doPan"
-              @mouseup="endPan"
-              @mouseleave="endPan"
-              id="workspace">
-
-            <div x-show="!imageSrc" class="absolute inset-0 flex items-center justify-center text-subtle flex-col space-y-4 pointer-events-none">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 opacity-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <p>Load an image to begin sensor analysis.</p>
+                <button
+                    @click="lsActive = true"
+                    class="w-full py-3 bg-pine text-white font-bold hover:bg-foam transition-all mt-4 text-lg"
+                >
+                    Start Light Panel
+                </button>
             </div>
 
-            <!-- Image Container -->
-            <div x-show="imageSrc"
-                 class="absolute transform-gpu origin-top-left"
-                 :style="`transform: translate(${panX}px, ${panY}px) scale(${zoom}); width: ${imageWidth}px; height: ${imageHeight}px;`">
-
-                <div x-show="showGrid" class="grid-overlay pointer-events-none"></div>
-
-                <img x-ref="canvasImage"
-                     :src="imageSrc"
-                     class="w-full h-full object-contain pointer-events-none"
-                     :style="visualize ? `filter: grayscale(100%) invert(100%) contrast(${sensitivity}%);` : ''"
-                     @load="onImageLoad">
-
-                <!-- Grid Overlay -->
-
-                <!-- Click Layer for Mapping -->
-                <div class="absolute inset-0 z-10"
-                     :class="mappingMode ? 'cursor-crosshair pointer-events-auto' : 'pointer-events-none'"
-                     @click="addMarker"></div>
-
-                <!-- Markers -->
-                <template x-for="(marker, index) in markers" :key="index">
-                    <div class="marker z-20" :style="`left: ${marker.x}%; top: ${marker.y}%; transform: translate(-50%, -50%) scale(${1/zoom});`"></div>
-                </template>
-            </div>
-
-            <!-- Zoom Controls HUD -->
-            <div class="absolute bottom-4 md:bottom-6 right-4 md:right-6 flex flex-col items-end space-y-2 z-10">
-                <div class="flex space-x-2" x-show="imageSrc">
-                    <button @click="resetView" class="bg-surface border border-hl text-text px-3 py-1 text-xs opacity-80 hover:opacity-100 transition-opacity">Reset View</button>
-                    <div class="bg-surface border border-hl px-3 py-1 flex items-center text-xs opacity-80 text-text">
-                        <span x-text="Math.round(zoom * 100) + '%'"></span>
+            <!-- Active Light Panel -->
+            <div
+                x-show="lsActive"
+                class="absolute inset-0 z-40 flex flex-col"
+                :style="`background-color: rgb(${lsR}, ${lsG}, ${lsB});`"
+            >
+                <div
+                    class="absolute inset-x-0 bottom-0 p-4 md:p-8 bg-black/50 text-white opacity-0 hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center space-y-6"
+                    @mouseenter="showLsControls = true"
+                    @mouseleave="showLsControls = false"
+                >
+                    <div class="w-full max-w-xl space-y-4 hidden md:block">
+                        <div class="flex items-center space-x-4">
+                            <label class="w-8 font-mono">R</label>
+                            <input
+                                type="range"
+                                min="0"
+                                max="255"
+                                x-model="lsR"
+                                class="flex-1 h-2 bg-gray-600 rounded-none accent-red-500"
+                            />
+                            <span
+                                class="w-8 text-right font-mono text-sm"
+                                x-text="lsR"
+                            ></span>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <label class="w-8 font-mono">G</label>
+                            <input
+                                type="range"
+                                min="0"
+                                max="255"
+                                x-model="lsG"
+                                class="flex-1 h-2 bg-gray-600 rounded-none accent-green-500"
+                            />
+                            <span
+                                class="w-8 text-right font-mono text-sm"
+                                x-text="lsG"
+                            ></span>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <label class="w-8 font-mono">B</label>
+                            <input
+                                type="range"
+                                min="0"
+                                max="255"
+                                x-model="lsB"
+                                class="flex-1 h-2 bg-gray-600 rounded-none accent-blue-500"
+                            />
+                            <span
+                                class="w-8 text-right font-mono text-sm"
+                                x-text="lsB"
+                            ></span>
+                        </div>
                     </div>
-                </div>
-                <div class="text-[10px] text-subtle opacity-70">&copy; devsimsek</div>
-            </div>
-        </main>
-    </div>
 
-    <!-- Light Screen Config & Fullscreen -->
-    <div x-show="lightScreenOpen"
-         class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-surface/90 backdrop-blur-sm p-4"
-         x-transition.opacity
-         @keydown.window="handleLightScreenKeys"
-         @keydown.escape.window="lightScreenOpen = false"
-         tabindex="0"
-         x-effect="if(lightScreenOpen) $el.focus()">
-
-        <!-- Setup Tab -->
-        <div class="w-full max-w-md bg-surface border border-hl-med shadow-2xl p-6 space-y-6 relative">
-            <button @click="lightScreenOpen = false" class="absolute top-4 right-4 text-text hover:text-love transition-colors">✕</button>
-            <h2 class="text-xl font-bold text-text">Light Screen Configuration</h2>
-
-            <div class="space-y-4">
-                <div class="flex items-center space-x-4">
-                    <label class="w-8 font-mono text-text font-bold">R</label>
-                    <input type="range" min="0" max="255" x-model="lsB" class="flex-1 speck-range speck-range-r">
-                    <span class="w-8 text-right font-mono text-sm text-text font-bold" x-text="lsR"></span>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <label class="w-8 font-mono text-text font-bold">G</label>
-                    <input type="range" min="0" max="255" x-model="lsG" class="flex-1 speck-range speck-range-g">
-                    <span class="w-8 text-right font-mono text-sm text-text font-bold" x-text="lsG"></span>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <label class="w-8 font-mono text-text font-bold">B</label>
-                    <input type="range" min="0" max="255" x-model="lsB" class="flex-1 speck-range speck-range-b">
-                    <span class="w-8 text-right font-mono text-sm text-text font-bold" x-text="lsB"></span>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2">
-                <button @click="lsR=255; lsG=255; lsB=255; lsActive = true" class="py-2 bg-overlay border border-hl-med text-sm hover:bg-hl-high transition-colors text-text font-semibold">Pure White</button>
-                <button @click="lsR=0; lsG=0; lsB=0" class="py-2 bg-overlay border border-hl-med text-sm hover:bg-hl-high transition-colors text-text font-semibold">Pure Black</button>
-            </div>
-
-            <button @click="lsActive = true" class="w-full py-3 bg-pine text-white font-bold hover:bg-foam transition-all mt-4 text-lg">Start Light Panel</button>
-        </div>
-
-        <!-- Active Light Panel -->
-        <div x-show="lsActive"
-             class="absolute inset-0 z-40 flex flex-col"
-             :style="`background-color: rgb(${lsR}, ${lsG}, ${lsB});`">
-
-            <div class="absolute inset-x-0 bottom-0 p-4 md:p-8 bg-black/50 text-white opacity-0 hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center space-y-6"
-                 @mouseenter="showLsControls = true" @mouseleave="showLsControls = false">
-
-                <div class="w-full max-w-xl space-y-4 hidden md:block">
-                    <div class="flex items-center space-x-4">
-                        <label class="w-8 font-mono">R</label>
-                        <input type="range" min="0" max="255" x-model="lsR" class="flex-1 h-2 bg-gray-600 rounded-none accent-red-500">
-                        <span class="w-8 text-right font-mono text-sm" x-text="lsR"></span>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <label class="w-8 font-mono">G</label>
-                        <input type="range" min="0" max="255" x-model="lsG" class="flex-1 h-2 bg-gray-600 rounded-none accent-green-500">
-                        <span class="w-8 text-right font-mono text-sm" x-text="lsG"></span>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <label class="w-8 font-mono">B</label>
-                        <input type="range" min="0" max="255" x-model="lsB" class="flex-1 h-2 bg-gray-600 rounded-none accent-blue-500">
-                        <span class="w-8 text-right font-mono text-sm" x-text="lsB"></span>
+                    <div class="flex flex-wrap justify-center gap-2">
+                        <button
+                            @click="lsR=255; lsG=255; lsB=255"
+                            class="px-3 md:px-4 py-2 border border-white/30 hover:bg-white/20 text-xs md:text-sm"
+                        >
+                            White (W)
+                        </button>
+                        <button
+                            @click="lsR=0; lsG=0; lsB=0"
+                            class="px-3 md:px-4 py-2 border border-white/30 hover:bg-white/20 text-xs md:text-sm"
+                        >
+                            Black (B)
+                        </button>
+                        <button
+                            @click="lsR=255; lsG=0; lsB=0"
+                            class="px-3 md:px-4 py-2 border border-white/30 hover:bg-white/20 text-xs md:text-sm hidden md:inline-block"
+                        >
+                            Red (R)
+                        </button>
+                        <button
+                            @click="lsR=0; lsG=255; lsB=0"
+                            class="px-3 md:px-4 py-2 border border-white/30 hover:bg-white/20 text-xs md:text-sm hidden md:inline-block"
+                        >
+                            Green (G)
+                        </button>
+                        <button
+                            @click="lsR=0; lsG=0; lsB=255"
+                            class="px-3 md:px-4 py-2 border border-white/30 hover:bg-white/20 text-xs md:text-sm hidden md:inline-block"
+                        >
+                            Blue (Shift+B)
+                        </button>
+                        <button
+                            @click="lsActive = false"
+                            class="px-3 md:px-4 py-2 border border-white hover:bg-white hover:text-black text-xs md:text-sm font-bold ml-0 md:ml-4"
+                        >
+                            Config
+                        </button>
+                        <button
+                            @click="lightScreenOpen = false; lsActive = false"
+                            class="px-3 md:px-4 py-2 border border-red-500/50 text-red-300 hover:bg-red-500 hover:text-white text-xs md:text-sm font-bold ml-2"
+                        >
+                            Exit (Esc)
+                        </button>
                     </div>
                 </div>
 
-                <div class="flex flex-wrap justify-center gap-2">
-                    <button @click="lsR=255; lsG=255; lsB=255" class="px-3 md:px-4 py-2 border border-white/30 hover:bg-white/20 text-xs md:text-sm">White (W)</button>
-                    <button @click="lsR=0; lsG=0; lsB=0" class="px-3 md:px-4 py-2 border border-white/30 hover:bg-white/20 text-xs md:text-sm">Black (B)</button>
-                    <button @click="lsR=255; lsG=0; lsB=0" class="px-3 md:px-4 py-2 border border-white/30 hover:bg-white/20 text-xs md:text-sm hidden md:inline-block">Red (R)</button>
-                    <button @click="lsR=0; lsG=255; lsB=0" class="px-3 md:px-4 py-2 border border-white/30 hover:bg-white/20 text-xs md:text-sm hidden md:inline-block">Green (G)</button>
-                    <button @click="lsR=0; lsG=0; lsB=255" class="px-3 md:px-4 py-2 border border-white/30 hover:bg-white/20 text-xs md:text-sm hidden md:inline-block">Blue (Shift+B)</button>
-                    <button @click="lsActive = false" class="px-3 md:px-4 py-2 border border-white hover:bg-white hover:text-black text-xs md:text-sm font-bold ml-0 md:ml-4">Config</button>
-                    <button @click="lightScreenOpen = false; lsActive = false" class="px-3 md:px-4 py-2 border border-red-500/50 text-red-300 hover:bg-red-500 hover:text-white text-xs md:text-sm font-bold ml-2">Exit (Esc)</button>
-                </div>
-            </div>
-
-            <div class="absolute top-4 right-4 text-white/50 text-xs tracking-widest uppercase pointer-events-none" x-show="!showLsControls">
-                Tap/Move to bottom for controls
-            </div>
-        </div>
-    </div>
-
-    <!-- About & Changelog Modal -->
-    <div x-show="showAboutModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" @click="showAboutModal = false" @keydown.escape.window="showAboutModal = false">
-        <div class="bg-surface border border-hl-med w-full max-w-2xl max-h-[80vh] rounded-none overflow-hidden flex flex-col shadow-2xl" @click.stop>
-            <div class="border-b border-hl-med p-6 flex justify-between items-center">
-                <h2 class="text-2xl font-bold text-text">About Speck</h2>
-                <button @click="showAboutModal = false" class="text-text hover:text-love transition-colors text-2xl">✕</button>
-            </div>
-            <div class="flex-1 overflow-y-auto p-6 space-y-6 text-text">
-                <div class="space-y-2">
-                    <h3 class="text-xl font-bold">Version <span x-text="currentVersion"></span></h3>
-                    <p class="text-subtle">Sensor Analysis & Dust Mapping Utility</p>
-                    <p class="text-sm">© devsimsek</p>
-                </div>
-                <div>
-                    <h4 class="font-bold text-lg mb-2">Features</h4>
-                    <ul class="space-y-1 text-sm text-text/80 list-disc list-inside">
-                        <li>Visualize sensor dust spots with adjustable contrast</li>
-                        <li>Create dust maps with visual markers</li>
-                        <li>Export maps as JPEG for reference</li>
-                        <li>Read camera EXIF data (shutter count, lens info)</li>
-                        <li>Light screen mode for hardware inspection</li>
-                        <li>Offline-capable Progressive Web App</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-lg mb-2">Camera Sensor Cleaning</h4>
-                    <p class="text-sm text-text/80 mb-3">For comprehensive guidance on safely cleaning your camera sensor, check out this excellent tutorial by Nigel Danson:</p>
-                    <a href="https://www.youtube.com/watch?v=b-7ciRxh6s8" target="_blank" class="inline-block bg-pine text-white px-3 py-2 text-sm font-medium hover:bg-foam transition-colors">
-                        Watch: How to Clean Your Camera Sensor Safely
-                    </a>
-                    <p class="text-xs text-text/60 mt-2">Credit: Nigel Danson - Photography Education & Tutorials</p>
-                </div>
-                <div x-show="aboutContent" class="border-t border-hl-med pt-4">
-                    <div class="prose prose-sm text-text/80 max-w-none" x-html="aboutContent"></div>
-                </div>
-                <div class="flex space-x-3 pt-4 border-t border-hl-med">
-                    <a href="https://github.com/devsimsek/Speck" target="_blank" class="flex-1 py-2 bg-pine text-white hover:bg-foam transition-colors text-center font-medium">GitHub Repository</a>
-                    <button @click="showAboutModal = false" class="flex-1 py-2 bg-overlay border border-hl-med text-text hover:bg-hl-high transition-colors font-semibold">Close</button>
+                <div
+                    class="absolute top-4 right-4 text-white/50 text-xs tracking-widest uppercase pointer-events-none"
+                    x-show="!showLsControls"
+                >
+                    Tap/Move to bottom for controls
                 </div>
             </div>
         </div>
-    </div>
 
-    <script>
-        document.addEventListener('alpine:init', () => {
-            Alpine.data('speckApp', () => ({
-                isDark: localStorage.getItem('speck_theme') !== 'light',
-                currentVersion: '1.2.5',
-                updateAvailable: false,
-                showAboutModal: false,
-                aboutContent: null,
-                pwaPrompt: null,
+        <!-- About & Changelog Modal -->
+        <div
+            x-show="showAboutModal"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+            @click="showAboutModal = false"
+            @keydown.escape.window="showAboutModal = false"
+        >
+            <div
+                class="bg-surface border border-hl-med w-full max-w-2xl max-h-[80vh] rounded-none overflow-hidden flex flex-col shadow-2xl"
+                @click.stop
+            >
+                <div
+                    class="border-b border-hl-med p-6 flex justify-between items-center"
+                >
+                    <h2 class="text-2xl font-bold text-text">About Speck</h2>
+                    <button
+                        @click="showAboutModal = false"
+                        class="text-text hover:text-love transition-colors text-2xl"
+                    >
+                        ✕
+                    </button>
+                </div>
+                <div class="flex-1 overflow-y-auto p-6 space-y-6 text-text">
+                    <div class="space-y-2">
+                        <h3 class="text-xl font-bold">
+                            Version <span x-text="currentVersion"></span>
+                        </h3>
+                        <p class="text-subtle">
+                            Sensor Analysis & Dust Mapping Utility
+                        </p>
+                        <p class="text-subtle">
+                            Read more at:
+                            <a
+                                class="inline-block bg-pine text-white px-3 py-2 text-sm font-medium hover:bg-foam transition-colors"
+                                href="https://smsk.dev/2026/04/15/welcome-speck/"
+                                >my blog!</a
+                            >
+                        </p>
+                        <p class="text-sm">© devsimsek</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg mb-2">Features</h4>
+                        <ul
+                            class="space-y-1 text-sm text-text/80 list-disc list-inside"
+                        >
+                            <li>
+                                Visualize sensor dust spots with adjustable
+                                contrast
+                            </li>
+                            <li>Create dust maps with visual markers</li>
+                            <li>Export maps as JPEG for reference</li>
+                            <li>
+                                Read camera EXIF data (shutter count, lens info)
+                            </li>
+                            <li>Light screen mode for hardware inspection</li>
+                            <li>Offline-capable Progressive Web App</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg mb-2">
+                            Camera Sensor Cleaning
+                        </h4>
+                        <p class="text-sm text-text/80 mb-3">
+                            For comprehensive guidance on safely cleaning your
+                            camera sensor, check out this excellent tutorial by
+                            Nigel Danson:
+                        </p>
+                        <a
+                            href="https://www.youtube.com/watch?v=b-7ciRxh6s8"
+                            target="_blank"
+                            class="inline-block bg-pine text-white px-3 py-2 text-sm font-medium hover:bg-foam transition-colors"
+                        >
+                            Watch: How to Clean Your Camera Sensor Safely
+                        </a>
+                        <p class="text-xs text-text/60 mt-2">
+                            Credit: Nigel Danson - Photography Education &
+                            Tutorials
+                        </p>
+                    </div>
+                    <div
+                        x-show="aboutContent"
+                        class="border-t border-hl-med pt-4"
+                    >
+                        <div
+                            class="prose prose-sm text-text/80 max-w-none"
+                            x-html="aboutContent"
+                        ></div>
+                    </div>
+                    <div class="flex space-x-3 pt-4 border-t border-hl-med">
+                        <a
+                            href="https://github.com/devsimsek/Speck"
+                            target="_blank"
+                            class="flex-1 py-2 bg-pine text-white hover:bg-foam transition-colors text-center font-medium"
+                            >GitHub Repository</a
+                        >
+                        <button
+                            @click="showAboutModal = false"
+                            class="flex-1 py-2 bg-overlay border border-hl-med text-text hover:bg-hl-high transition-colors font-semibold"
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                // Image state
-                imageSrc: null,
-                imageWidth: 0,
-                imageHeight: 0,
-                shutterCount: null,
-                exifInfo: {},
+        <script>
+            document.addEventListener("alpine:init", () => {
+                Alpine.data("speckApp", () => ({
+                    isDark: localStorage.getItem("speck_theme") !== "light",
+                    currentVersion: "1.2.5",
+                    updateAvailable: false,
+                    showAboutModal: false,
+                    aboutContent: null,
+                    pwaPrompt: null,
 
-                // Visualize Spots
-                visualize: false,
-                sensitivity: 100,
+                    // Image state
+                    imageSrc: null,
+                    imageWidth: 0,
+                    imageHeight: 0,
+                    shutterCount: null,
+                    exifInfo: {},
 
-                // Overlays & Mapping
-                showGrid: false,
-                mappingMode: false,
-                markers: [],
+                    // Visualize Spots
+                    visualize: false,
+                    sensitivity: 100,
 
-                // Navigation state
-                zoom: 1,
-                panX: 0,
-                panY: 0,
-                isPanning: false,
-                startX: 0,
-                startY: 0,
+                    // Overlays & Mapping
+                    showGrid: false,
+                    mappingMode: false,
+                    markers: [],
 
-                // Light Screen
-                lightScreenOpen: false,
-                lsActive: false,
-                showLsControls: false,
-                lsR: 255,
-                lsG: 255,
-                lsB: 255,
+                    // Navigation state
+                    zoom: 1,
+                    panX: 0,
+                    panY: 0,
+                    isPanning: false,
+                    startX: 0,
+                    startY: 0,
 
-                init() {
-                    this.$watch('isDark', val => {
-                        localStorage.setItem('speck_theme', val ? 'dark' : 'light');
-                    });
-                    this.checkForUpdates();
-                    this.loadAboutContent();
+                    // Light Screen
+                    lightScreenOpen: false,
+                    lsActive: false,
+                    showLsControls: false,
+                    lsR: 255,
+                    lsG: 255,
+                    lsB: 255,
 
-                    window.addEventListener('keydown', (e) => {
-                        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'u') {
+                    init() {
+                        this.$watch("isDark", (val) => {
+                            localStorage.setItem(
+                                "speck_theme",
+                                val ? "dark" : "light",
+                            );
+                        });
+                        this.checkForUpdates();
+                        this.loadAboutContent();
+
+                        window.addEventListener("keydown", (e) => {
+                            if (
+                                (e.ctrlKey || e.metaKey) &&
+                                e.key.toLowerCase() === "u"
+                            ) {
+                                e.preventDefault();
+                                this.checkForUpdates();
+                            }
+                        });
+
+                        // PWA install prompt
+                        window.addEventListener("beforeinstallprompt", (e) => {
                             e.preventDefault();
-                            this.checkForUpdates();
-                        }
-                    });
-
-                    // PWA install prompt
-                    window.addEventListener('beforeinstallprompt', (e) => {
-                        e.preventDefault();
-                        this.pwaPrompt = e;
-                    });
-                },
-
-                async checkForUpdates() {
-                    try {
-                        const res = await fetch('https://raw.githubusercontent.com/devsimsek/Speck/main/VERSION?t=' + new Date().getTime());
-                        if (res.ok) {
-                            const latestVersion = (await res.text()).trim();
-                            if (latestVersion && latestVersion !== this.currentVersion) {
-                                const attemptedVersion = localStorage.getItem('speck_attempted_update_from');
-                                if (attemptedVersion !== this.currentVersion) {
-                                    this.updateAvailable = true;
-                                }
-                            } else if (latestVersion === this.currentVersion) {
-                                this.updateAvailable = false;
-                                localStorage.removeItem('speck_update_applied');
-                                localStorage.removeItem('speck_attempted_update_from');
-                            }
-                        }
-                    } catch (e) {
-                        console.error('Failed to check for updates:', e);
-                    }
-                },
-
-                async loadAboutContent() {
-                    try {
-                        const res = await fetch('https://raw.githubusercontent.com/devsimsek/Speck/main/docs/CHANGELOG.md?t=' + new Date().getTime());
-                        if (res.ok) {
-                            const content = await res.text();
-                            this.aboutContent = this.markdownToHtml(content);
-                        }
-                    } catch (e) {
-                        console.error('Failed to load about content:', e);
-                    }
-                },
-
-                markdownToHtml(markdown) {
-                    let html = markdown;
-                    html = html.replace(/^### (.*?)$/gim, '<h4 class="font-bold mt-3 mb-2">$1</h4>');
-                    html = html.replace(/^## (.*?)$/gim, '<h3 class="font-bold text-lg mt-4 mb-2">$1</h3>');
-                    html = html.replace(/^# (.*?)$/gim, '<h2 class="font-bold text-xl mt-6 mb-3">$1</h2>');
-                    html = html.replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>');
-                    html = html.replace(/\*(.*?)\*/gim, '<em>$1</em>');
-                    html = html.replace(/`(.*?)`/gim, '<code class="bg-hl-med px-1 py-0.5 rounded-none text-sm">$1</code>');
-                    html = html.replace(/\n\n/gim, '</p><p class="mt-2">');
-                    html = '<p>' + html + '</p>';
-                    return html;
-                },
-
-                installPWA() {
-                    if (this.pwaPrompt) {
-                        this.pwaPrompt.prompt();
-                        this.pwaPrompt.userChoice.then(choiceResult => {
-                            if (choiceResult.outcome === 'accepted') {
-                                console.log('PWA installed');
-                            }
-                            this.pwaPrompt = null;
+                            this.pwaPrompt = e;
                         });
-                    }
-                },
+                    },
 
-                applyUpdate() {
-                    if ('serviceWorker' in navigator) {
-                        caches.keys().then(names => {
-                            for (let name of names) caches.delete(name);
-                        });
-                    }
-                    this.updateAvailable = false;
-                    localStorage.setItem('speck_update_applied', 'true');
-                    localStorage.setItem('speck_attempted_update_from', this.currentVersion);
-                    window.location.reload(true);
-                },
-
-                exportDustMapJSON() {
-                    if (this.markers.length === 0) return;
-                    
-                    const dustMapData = {
-                        version: '1.0',
-                        exportDate: new Date().toISOString(),
-                        image: {
-                            width: this.imageWidth,
-                            height: this.imageHeight,
-                            fileName: this.imageSrc ? this.imageSrc.split('/').pop() : 'image'
-                        },
-                        markers: this.markers.map(marker => ({
-                            x: marker.x,
-                            y: marker.y
-                        })),
-                        settings: {
-                            sensitivity: this.sensitivity,
-                            gridOverlay: this.showGrid
-                        }
-                    };
-
-                    const jsonString = JSON.stringify(dustMapData, null, 2);
-                    const blob = new Blob([jsonString], { type: 'application/json' });
-                    const url = URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = `dust-map-${new Date().getTime()}.json`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    URL.revokeObjectURL(url);
-                },
-
-                importDustMapJSON(event) {
-                    const file = event.target.files[0];
-                    if (!file) return;
-
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
+                    async checkForUpdates() {
                         try {
-                            const dustMapData = JSON.parse(e.target.result);
-                            
-                            if (!dustMapData.markers || !Array.isArray(dustMapData.markers)) {
-                                alert('Invalid dust map JSON file');
-                                return;
+                            const res = await fetch(
+                                "https://raw.githubusercontent.com/devsimsek/Speck/main/VERSION?t=" +
+                                    new Date().getTime(),
+                            );
+                            if (res.ok) {
+                                const latestVersion = (await res.text()).trim();
+                                if (
+                                    latestVersion &&
+                                    latestVersion !== this.currentVersion
+                                ) {
+                                    const attemptedVersion =
+                                        localStorage.getItem(
+                                            "speck_attempted_update_from",
+                                        );
+                                    if (
+                                        attemptedVersion !== this.currentVersion
+                                    ) {
+                                        this.updateAvailable = true;
+                                    }
+                                } else if (
+                                    latestVersion === this.currentVersion
+                                ) {
+                                    this.updateAvailable = false;
+                                    localStorage.removeItem(
+                                        "speck_update_applied",
+                                    );
+                                    localStorage.removeItem(
+                                        "speck_attempted_update_from",
+                                    );
+                                }
                             }
+                        } catch (e) {
+                            console.error("Failed to check for updates:", e);
+                        }
+                    },
 
-                            this.markers = dustMapData.markers.map(marker => ({
+                    async loadAboutContent() {
+                        try {
+                            const res = await fetch(
+                                "https://raw.githubusercontent.com/devsimsek/Speck/main/docs/CHANGELOG.md?t=" +
+                                    new Date().getTime(),
+                            );
+                            if (res.ok) {
+                                const content = await res.text();
+                                this.aboutContent =
+                                    this.markdownToHtml(content);
+                            }
+                        } catch (e) {
+                            console.error("Failed to load about content:", e);
+                        }
+                    },
+
+                    markdownToHtml(markdown) {
+                        let html = markdown;
+                        html = html.replace(
+                            /^### (.*?)$/gim,
+                            '<h4 class="font-bold mt-3 mb-2">$1</h4>',
+                        );
+                        html = html.replace(
+                            /^## (.*?)$/gim,
+                            '<h3 class="font-bold text-lg mt-4 mb-2">$1</h3>',
+                        );
+                        html = html.replace(
+                            /^# (.*?)$/gim,
+                            '<h2 class="font-bold text-xl mt-6 mb-3">$1</h2>',
+                        );
+                        html = html.replace(
+                            /\*\*(.*?)\*\*/gim,
+                            "<strong>$1</strong>",
+                        );
+                        html = html.replace(/\*(.*?)\*/gim, "<em>$1</em>");
+                        html = html.replace(
+                            /`(.*?)`/gim,
+                            '<code class="bg-hl-med px-1 py-0.5 rounded-none text-sm">$1</code>',
+                        );
+                        html = html.replace(/\n\n/gim, '</p><p class="mt-2">');
+                        html = "<p>" + html + "</p>";
+                        return html;
+                    },
+
+                    installPWA() {
+                        if (this.pwaPrompt) {
+                            this.pwaPrompt.prompt();
+                            this.pwaPrompt.userChoice.then((choiceResult) => {
+                                if (choiceResult.outcome === "accepted") {
+                                    console.log("PWA installed");
+                                }
+                                this.pwaPrompt = null;
+                            });
+                        }
+                    },
+
+                    applyUpdate() {
+                        if ("serviceWorker" in navigator) {
+                            caches.keys().then((names) => {
+                                for (let name of names) caches.delete(name);
+                            });
+                        }
+                        this.updateAvailable = false;
+                        localStorage.setItem("speck_update_applied", "true");
+                        localStorage.setItem(
+                            "speck_attempted_update_from",
+                            this.currentVersion,
+                        );
+                        window.location.reload(true);
+                    },
+
+                    exportDustMapJSON() {
+                        if (this.markers.length === 0) return;
+
+                        const dustMapData = {
+                            version: "1.0",
+                            exportDate: new Date().toISOString(),
+                            image: {
+                                width: this.imageWidth,
+                                height: this.imageHeight,
+                                fileName: this.imageSrc
+                                    ? this.imageSrc.split("/").pop()
+                                    : "image",
+                            },
+                            markers: this.markers.map((marker) => ({
                                 x: marker.x,
-                                y: marker.y
-                            }));
+                                y: marker.y,
+                            })),
+                            settings: {
+                                sensitivity: this.sensitivity,
+                                gridOverlay: this.showGrid,
+                            },
+                        };
 
-                            if (dustMapData.settings) {
-                                this.sensitivity = dustMapData.settings.sensitivity || this.sensitivity;
-                                this.showGrid = dustMapData.settings.gridOverlay !== undefined ? dustMapData.settings.gridOverlay : this.showGrid;
+                        const jsonString = JSON.stringify(dustMapData, null, 2);
+                        const blob = new Blob([jsonString], {
+                            type: "application/json",
+                        });
+                        const url = URL.createObjectURL(blob);
+                        const link = document.createElement("a");
+                        link.href = url;
+                        link.download = `dust-map-${new Date().getTime()}.json`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        URL.revokeObjectURL(url);
+                    },
+
+                    importDustMapJSON(event) {
+                        const file = event.target.files[0];
+                        if (!file) return;
+
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            try {
+                                const dustMapData = JSON.parse(e.target.result);
+
+                                if (
+                                    !dustMapData.markers ||
+                                    !Array.isArray(dustMapData.markers)
+                                ) {
+                                    alert("Invalid dust map JSON file");
+                                    return;
+                                }
+
+                                this.markers = dustMapData.markers.map(
+                                    (marker) => ({
+                                        x: marker.x,
+                                        y: marker.y,
+                                    }),
+                                );
+
+                                if (dustMapData.settings) {
+                                    this.sensitivity =
+                                        dustMapData.settings.sensitivity ||
+                                        this.sensitivity;
+                                    this.showGrid =
+                                        dustMapData.settings.gridOverlay !==
+                                        undefined
+                                            ? dustMapData.settings.gridOverlay
+                                            : this.showGrid;
+                                }
+
+                                alert(
+                                    `Successfully imported ${this.markers.length} marker(s)`,
+                                );
+                                event.target.value = "";
+                            } catch (error) {
+                                alert(
+                                    "Error parsing dust map JSON: " +
+                                        error.message,
+                                );
+                                event.target.value = "";
                             }
+                        };
+                        reader.readAsText(file);
+                    },
 
-                            alert(`Successfully imported ${this.markers.length} marker(s)`);
-                            event.target.value = '';
-                        } catch (error) {
-                            alert('Error parsing dust map JSON: ' + error.message);
-                            event.target.value = '';
+                    handleLightScreenKeys(e) {
+                        if (!this.lightScreenOpen) return;
+                        const key = e.key;
+                        if (key === "Escape") {
+                            if (this.lsActive) this.lsActive = false;
+                            else this.lightScreenOpen = false;
                         }
-                    };
-                    reader.readAsText(file);
-                },
+                        if (key.toLowerCase() === "w") {
+                            this.lsR = 255;
+                            this.lsG = 255;
+                            this.lsB = 255;
+                        }
+                        if (key === "b") {
+                            this.lsR = 0;
+                            this.lsG = 0;
+                            this.lsB = 0;
+                        } // Lowercase b for black
+                        if (key.toLowerCase() === "r") {
+                            this.lsR = 255;
+                            this.lsG = 0;
+                            this.lsB = 0;
+                        }
+                        if (key.toLowerCase() === "g") {
+                            this.lsR = 0;
+                            this.lsG = 255;
+                            this.lsB = 0;
+                        }
+                        if (key === "B") {
+                            this.lsR = 0;
+                            this.lsG = 0;
+                            this.lsB = 255;
+                        } // Uppercase B (Shift+B) for blue
+                    },
 
-                handleLightScreenKeys(e) {
-                    if (!this.lightScreenOpen) return;
-                    const key = e.key;
-                    if (key === 'Escape') {
-                        if (this.lsActive) this.lsActive = false;
-                        else this.lightScreenOpen = false;
-                    }
-                    if (key.toLowerCase() === 'w') { this.lsR = 255; this.lsG = 255; this.lsB = 255; }
-                    if (key === 'b') { this.lsR = 0; this.lsG = 0; this.lsB = 0; } // Lowercase b for black
-                    if (key.toLowerCase() === 'r') { this.lsR = 255; this.lsG = 0; this.lsB = 0; }
-                    if (key.toLowerCase() === 'g') { this.lsR = 0; this.lsG = 255; this.lsB = 0; }
-                    if (key === 'B') { this.lsR = 0; this.lsG = 0; this.lsB = 255; } // Uppercase B (Shift+B) for blue
-                },
+                    toggleTheme() {
+                        this.isDark = !this.isDark;
+                    },
 
-                toggleTheme() {
-                    this.isDark = !this.isDark;
-                },
+                    async handleImageUpload(e) {
+                        const file = e.target.files[0];
+                        if (!file) return;
 
-                async handleImageUpload(e) {
-                    const file = e.target.files[0];
-                    if (!file) return;
+                        this.imageSrc = URL.createObjectURL(file);
+                        this.markers = [];
+                        this.resetView();
+                        this.shutterCount = null;
 
-                    this.imageSrc = URL.createObjectURL(file);
-                    this.markers = [];
-                    this.resetView();
-                    this.shutterCount = null;
+                        this.exifInfo = {};
 
-                    this.exifInfo = {};
+                        try {
+                            // Extract EXIF data
+                            const exifData = await exifr.parse(file, [
+                                "ImageNumber",
+                                "ShutterCount",
+                                "Make",
+                                "Model",
+                                "LensModel",
+                                "ISO",
+                                "FNumber",
+                                "ExposureTime",
+                            ]);
+                            if (exifData) {
+                                this.shutterCount =
+                                    exifData.ShutterCount ||
+                                    exifData.ImageNumber ||
+                                    "Unknown";
 
-                    try {
-                        // Extract EXIF data
-                        const exifData = await exifr.parse(file, ['ImageNumber', 'ShutterCount', 'Make', 'Model', 'LensModel', 'ISO', 'FNumber', 'ExposureTime']);
-                        if (exifData) {
-                            this.shutterCount = exifData.ShutterCount || exifData.ImageNumber || 'Unknown';
+                                let cameraParts = [];
+                                if (exifData.Make)
+                                    cameraParts.push(exifData.Make);
+                                if (exifData.Model)
+                                    cameraParts.push(exifData.Model);
 
-                            let cameraParts = [];
-                            if (exifData.Make) cameraParts.push(exifData.Make);
-                            if (exifData.Model) cameraParts.push(exifData.Model);
+                                let lensInfo = exifData.LensModel || null;
 
-                            let lensInfo = exifData.LensModel || null;
+                                let settingsParts = [];
+                                if (exifData.FNumber)
+                                    settingsParts.push(`f/${exifData.FNumber}`);
+                                if (exifData.ExposureTime)
+                                    settingsParts.push(
+                                        `${exifData.ExposureTime}s`,
+                                    );
+                                if (exifData.ISO)
+                                    settingsParts.push(`ISO ${exifData.ISO}`);
 
-                            let settingsParts = [];
-                            if (exifData.FNumber) settingsParts.push(`f/${exifData.FNumber}`);
-                            if (exifData.ExposureTime) settingsParts.push(`${exifData.ExposureTime}s`);
-                            if (exifData.ISO) settingsParts.push(`ISO ${exifData.ISO}`);
-
-                            if (cameraParts.length > 0 || settingsParts.length > 0 || lensInfo) {
-                                this.exifInfo = {
-                                    camera: cameraParts.join(' '),
-                                    lens: lensInfo,
-                                    settings: settingsParts.join(' | ')
-                                };
+                                if (
+                                    cameraParts.length > 0 ||
+                                    settingsParts.length > 0 ||
+                                    lensInfo
+                                ) {
+                                    this.exifInfo = {
+                                        camera: cameraParts.join(" "),
+                                        lens: lensInfo,
+                                        settings: settingsParts.join(" | "),
+                                    };
+                                }
                             }
+                        } catch (err) {
+                            console.error("EXIF extraction failed:", err);
                         }
-                    } catch (err) {
-                        console.error("EXIF extraction failed:", err);
-                    }
-                },
+                    },
 
-                onImageLoad() {
-                    const img = this.$refs.canvasImage;
-                    const workspace = document.getElementById('workspace');
+                    onImageLoad() {
+                        const img = this.$refs.canvasImage;
+                        const workspace = document.getElementById("workspace");
 
-                    // Fit to screen initially
-                    const wRatio = workspace.clientWidth / img.naturalWidth;
-                    const hRatio = workspace.clientHeight / img.naturalHeight;
-                    const initialZoom = Math.min(wRatio, hRatio) * 0.9; // 90% of available space
+                        // Fit to screen initially
+                        const wRatio = workspace.clientWidth / img.naturalWidth;
+                        const hRatio =
+                            workspace.clientHeight / img.naturalHeight;
+                        const initialZoom = Math.min(wRatio, hRatio) * 0.9; // 90% of available space
 
-                    this.imageWidth = img.naturalWidth;
-                    this.imageHeight = img.naturalHeight;
+                        this.imageWidth = img.naturalWidth;
+                        this.imageHeight = img.naturalHeight;
 
-                    this.zoom = initialZoom;
+                        this.zoom = initialZoom;
 
-                    // Center it
-                    this.panX = (workspace.clientWidth - (this.imageWidth * this.zoom)) / 2;
-                    this.panY = (workspace.clientHeight - (this.imageHeight * this.zoom)) / 2;
-                },
+                        // Center it
+                        this.panX =
+                            (workspace.clientWidth -
+                                this.imageWidth * this.zoom) /
+                            2;
+                        this.panY =
+                            (workspace.clientHeight -
+                                this.imageHeight * this.zoom) /
+                            2;
+                    },
 
-                resetView() {
-                    if(!this.imageSrc) return;
-                    this.onImageLoad(); // Recalculates zoom and pan
-                },
+                    resetView() {
+                        if (!this.imageSrc) return;
+                        this.onImageLoad(); // Recalculates zoom and pan
+                    },
 
-                handleZoom(e) {
-                    if (!this.imageSrc) return;
+                    handleZoom(e) {
+                        if (!this.imageSrc) return;
 
-                    const workspace = document.getElementById('workspace');
-                    const rect = workspace.getBoundingClientRect();
+                        const workspace = document.getElementById("workspace");
+                        const rect = workspace.getBoundingClientRect();
 
-                    // Mouse position relative to workspace
-                    const mouseX = e.clientX - rect.left;
-                    const mouseY = e.clientY - rect.top;
+                        // Mouse position relative to workspace
+                        const mouseX = e.clientX - rect.left;
+                        const mouseY = e.clientY - rect.top;
 
-                    const zoomDelta = e.deltaY * -0.001;
-                    const newZoom = Math.max(0.1, Math.min(this.zoom * (1 + zoomDelta), 10)); // Min 10%, Max 1000%
+                        const zoomDelta = e.deltaY * -0.001;
+                        const newZoom = Math.max(
+                            0.1,
+                            Math.min(this.zoom * (1 + zoomDelta), 10),
+                        ); // Min 10%, Max 1000%
 
-                    // Zoom relative to mouse pointer
-                    const zoomFactor = newZoom / this.zoom;
+                        // Zoom relative to mouse pointer
+                        const zoomFactor = newZoom / this.zoom;
 
-                    this.panX = mouseX - (mouseX - this.panX) * zoomFactor;
-                    this.panY = mouseY - (mouseY - this.panY) * zoomFactor;
+                        this.panX = mouseX - (mouseX - this.panX) * zoomFactor;
+                        this.panY = mouseY - (mouseY - this.panY) * zoomFactor;
 
-                    this.zoom = newZoom;
-                },
+                        this.zoom = newZoom;
+                    },
 
-                startPan(e) {
-                    if (!this.imageSrc || this.mappingMode) return;
-                    if (e.button !== 0) return; // Only left click
+                    startPan(e) {
+                        if (!this.imageSrc || this.mappingMode) return;
+                        if (e.button !== 0) return; // Only left click
 
-                    this.isPanning = true;
-                    this.startX = e.clientX - this.panX;
-                    this.startY = e.clientY - this.panY;
-                },
+                        this.isPanning = true;
+                        this.startX = e.clientX - this.panX;
+                        this.startY = e.clientY - this.panY;
+                    },
 
-                doPan(e) {
-                    if (!this.isPanning) return;
+                    doPan(e) {
+                        if (!this.isPanning) return;
 
-                    this.panX = e.clientX - this.startX;
-                    this.panY = e.clientY - this.startY;
-                },
+                        this.panX = e.clientX - this.startX;
+                        this.panY = e.clientY - this.startY;
+                    },
 
-                endPan() {
-                    this.isPanning = false;
-                },
+                    endPan() {
+                        this.isPanning = false;
+                    },
 
-                addMarker(e) {
-                    if (!this.mappingMode || !this.imageSrc) return;
+                    addMarker(e) {
+                        if (!this.mappingMode || !this.imageSrc) return;
 
-                    const rect = e.target.getBoundingClientRect();
-                    // Calculate percentage position relative to the image container
-                    const x = ((e.clientX - rect.left) / rect.width) * 100;
-                    const y = ((e.clientY - rect.top) / rect.height) * 100;
+                        const rect = e.target.getBoundingClientRect();
+                        // Calculate percentage position relative to the image container
+                        const x = ((e.clientX - rect.left) / rect.width) * 100;
+                        const y = ((e.clientY - rect.top) / rect.height) * 100;
 
-                    this.markers.push({ x, y });
-                },
+                        this.markers.push({ x, y });
+                    },
 
-                clearMarkers() {
-                    this.markers = [];
-                },
+                    clearMarkers() {
+                        this.markers = [];
+                    },
 
-                exportMap() {
-                    if (!this.imageSrc) return;
+                    exportMap() {
+                        if (!this.imageSrc) return;
 
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    const img = this.$refs.canvasImage;
+                        const canvas = document.createElement("canvas");
+                        const ctx = canvas.getContext("2d");
+                        const img = this.$refs.canvasImage;
 
-                    canvas.width = img.naturalWidth;
-                    canvas.height = img.naturalHeight;
+                        canvas.width = img.naturalWidth;
+                        canvas.height = img.naturalHeight;
 
-                    // Apply filters if visualize is on
-                    if (this.visualize) {
-                        ctx.filter = `grayscale(100%) invert(100%) contrast(${this.sensitivity}%)`;
-                    }
+                        // Apply filters if visualize is on
+                        if (this.visualize) {
+                            ctx.filter = `grayscale(100%) invert(100%) contrast(${this.sensitivity}%)`;
+                        }
 
-                    ctx.drawImage(img, 0, 0);
+                        ctx.drawImage(img, 0, 0);
 
-                    // Reset filter for markers
-                    ctx.filter = 'none';
+                        // Reset filter for markers
+                        ctx.filter = "none";
 
-                    // Draw Markers
-                    const loveColor = this.isDark ? '#eb6f92' : '#b4637a';
+                        // Draw Markers
+                        const loveColor = this.isDark ? "#eb6f92" : "#b4637a";
 
-                    this.markers.forEach(marker => {
-                        const x = (marker.x / 100) * canvas.width;
-                        const y = (marker.y / 100) * canvas.height;
+                        this.markers.forEach((marker) => {
+                            const x = (marker.x / 100) * canvas.width;
+                            const y = (marker.y / 100) * canvas.height;
 
-                        // Marker circle radius (relative to image size so it's visible, e.g., 20px on a 4k image is too small)
-                        // Fixed size relative to output: 24px diameter
-                        const radius = 12;
+                            // Marker circle radius (relative to image size so it's visible, e.g., 20px on a 4k image is too small)
+                            // Fixed size relative to output: 24px diameter
+                            const radius = 12;
 
-                        ctx.beginPath();
-                        ctx.arc(x, y, radius, 0, 2 * Math.PI);
-                        ctx.strokeStyle = loveColor;
-                        ctx.lineWidth = 4;
-                        ctx.stroke();
+                            ctx.beginPath();
+                            ctx.arc(x, y, radius, 0, 2 * Math.PI);
+                            ctx.strokeStyle = loveColor;
+                            ctx.lineWidth = 4;
+                            ctx.stroke();
 
-                        // Inner dot
-                        ctx.beginPath();
-                        ctx.arc(x, y, 4, 0, 2 * Math.PI);
-                        ctx.fillStyle = loveColor;
-                        ctx.fill();
-                    });
+                            // Inner dot
+                            ctx.beginPath();
+                            ctx.arc(x, y, 4, 0, 2 * Math.PI);
+                            ctx.fillStyle = loveColor;
+                            ctx.fill();
+                        });
 
-                    // Download
-                    const link = document.createElement('a');
-                    link.download = 'speck-dust-map.jpg';
-                    link.href = canvas.toDataURL('image/jpeg', 0.9);
-                    link.click();
-                }
-            }));
-        });
-    </script>
-</body>
+                        // Download
+                        const link = document.createElement("a");
+                        link.download = "speck-dust-map.jpg";
+                        link.href = canvas.toDataURL("image/jpeg", 0.9);
+                        link.click();
+                    },
+                }));
+            });
+        </script>
+    </body>
 </html>
