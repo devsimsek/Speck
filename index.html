@@ -628,8 +628,8 @@
         document.addEventListener('alpine:init', () => {
             Alpine.data('speckApp', () => ({
                 isDark: localStorage.getItem('speck_theme') !== 'light',
-                currentVersion: '1.2.0',
-                updateAvailable: localStorage.getItem('speck_update_applied') !== 'true',
+                currentVersion: '1.2.5',
+                updateAvailable: false,
                 showAboutModal: false,
                 aboutContent: null,
                 pwaPrompt: null,
@@ -693,8 +693,14 @@
                         if (res.ok) {
                             const latestVersion = (await res.text()).trim();
                             if (latestVersion && latestVersion !== this.currentVersion) {
+                                const attemptedVersion = localStorage.getItem('speck_attempted_update_from');
+                                if (attemptedVersion !== this.currentVersion) {
+                                    this.updateAvailable = true;
+                                }
+                            } else if (latestVersion === this.currentVersion) {
+                                this.updateAvailable = false;
                                 localStorage.removeItem('speck_update_applied');
-                                this.updateAvailable = true;
+                                localStorage.removeItem('speck_attempted_update_from');
                             }
                         }
                     } catch (e) {
@@ -747,6 +753,7 @@
                     }
                     this.updateAvailable = false;
                     localStorage.setItem('speck_update_applied', 'true');
+                    localStorage.setItem('speck_attempted_update_from', this.currentVersion);
                     window.location.reload(true);
                 },
 

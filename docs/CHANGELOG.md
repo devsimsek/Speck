@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.5] - 2026-04-16
+### Fixed
+- OTA update logic now properly tracks version-specific updates to prevent duplicate update banners.
+- Update banner now clears correctly when the latest version matches the current app version.
+- Introduced `speck_attempted_update_from` flag to prevent stale update notifications.
+
 ## [1.2.0] - 2026-04-16
 ### Added
 - Export dust map markers as JSON file with image metadata and settings.
