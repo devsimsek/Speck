@@ -137,13 +137,25 @@
         .speck-range::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none !important;
-            width: 18px;
-            height: 18px;
+            width: 14px;
+            height: 14px;
             background: var(--color-rose) !important;
             border: 1px solid var(--color-text) !important;
-            border-radius: 0 !important;
-            margin-top: -5px;
+            border-radius: 0;
+            margin-top: -3px;
             cursor: pointer;
+        }
+
+        .speck-range-r::-webkit-slider-thumb {
+            background: #ff6b6b !important;
+        }
+
+        .speck-range-g::-webkit-slider-thumb {
+            background: #51cf66 !important;
+        }
+
+        .speck-range-b::-webkit-slider-thumb {
+            background: #4ecdc4 !important;
         }
 
         .speck-range::-moz-range-track {
@@ -155,19 +167,56 @@
         }
 
         .speck-range::-moz-range-thumb {
-            width: 18px;
-            height: 18px;
+            width: 14px;
+            height: 14px;
             background: var(--color-rose) !important;
             border: 1px solid var(--color-text) !important;
-            border-radius: 0 !important;
+            border-radius: 0;
             cursor: pointer;
             -moz-appearance: none;
             appearance: none;
         }
 
+        .speck-range-r::-moz-range-thumb {
+            background: #ff6b6b !important;
+        }
+
+        .speck-range-g::-moz-range-thumb {
+            background: #51cf66 !important;
+        }
+
+        .speck-range-b::-moz-range-thumb {
+            background: #4ecdc4 !important;
+        }
+
         .speck-range::-moz-range-progress {
             background: var(--color-hl-high);
             height: 8px;
+        }
+
+        /* RGB Slider Colors */
+        .speck-range-r::-webkit-slider-thumb {
+            background: #ff6b6b !important;
+        }
+
+        .speck-range-r::-moz-range-thumb {
+            background: #ff6b6b !important;
+        }
+
+        .speck-range-g::-webkit-slider-thumb {
+            background: #51cf66 !important;
+        }
+
+        .speck-range-g::-moz-range-thumb {
+            background: #51cf66 !important;
+        }
+
+        .speck-range-b::-webkit-slider-thumb {
+            background: #4ecdc4 !important;
+        }
+
+        .speck-range-b::-moz-range-thumb {
+            background: #4ecdc4 !important;
         }
 
         .grid-overlay {
@@ -338,7 +387,7 @@
                             <span>Sensitivity</span>
                             <span x-text="sensitivity + '%'"></span>
                         </div>
-                        <input type="range" min="200" max="1000" step="10" x-model="sensitivity" class="speck-range">
+                        <input type="range" min="0" max="2000" step="10" x-model="sensitivity" class="speck-range">
                     </div>
                 </div>
 
@@ -458,23 +507,23 @@
             <div class="space-y-4">
                 <div class="flex items-center space-x-4">
                     <label class="w-8 font-mono text-text font-bold">R</label>
-                    <input type="range" min="0" max="255" x-model="lsR" class="flex-1 h-2 bg-hl-high outline-none appearance-none -webkit-appearance-none [&::-webkit-slider-thumb]:appearance-none! [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-rose [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-hl-med [&::-webkit-slider-thumb]:rounded-none [&::-webkit-slider-thumb]:-webkit-appearance-none [&::-moz-range-thumb]:appearance-none! [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:bg-rose [&::-moz-range-thumb]:border [&::-moz-range-thumb]:border-hl-med [&::-moz-range-thumb]:rounded-none">
+                    <input type="range" min="0" max="255" x-model="lsB" class="flex-1 speck-range speck-range-r">
                     <span class="w-8 text-right font-mono text-sm text-text font-bold" x-text="lsR"></span>
                 </div>
                 <div class="flex items-center space-x-4">
                     <label class="w-8 font-mono text-text font-bold">G</label>
-                    <input type="range" min="0" max="255" x-model="lsG" class="flex-1 h-2 bg-hl-high outline-none appearance-none -webkit-appearance-none [&::-webkit-slider-thumb]:appearance-none! [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-foam [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-hl-med [&::-webkit-slider-thumb]:rounded-none [&::-webkit-slider-thumb]:-webkit-appearance-none [&::-moz-range-thumb]:appearance-none! [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:bg-foam [&::-moz-range-thumb]:border [&::-moz-range-thumb]:border-hl-med [&::-moz-range-thumb]:rounded-none">
+                    <input type="range" min="0" max="255" x-model="lsG" class="flex-1 speck-range speck-range-g">
                     <span class="w-8 text-right font-mono text-sm text-text font-bold" x-text="lsG"></span>
                 </div>
                 <div class="flex items-center space-x-4">
                     <label class="w-8 font-mono text-text font-bold">B</label>
-                    <input type="range" min="0" max="255" x-model="lsB" class="flex-1 h-2 bg-hl-high outline-none appearance-none -webkit-appearance-none [&::-webkit-slider-thumb]:appearance-none! [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-iris [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-hl-med [&::-webkit-slider-thumb]:rounded-none [&::-webkit-slider-thumb]:-webkit-appearance-none [&::-moz-range-thumb]:appearance-none! [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:bg-iris [&::-moz-range-thumb]:border [&::-moz-range-thumb]:border-hl-med [&::-moz-range-thumb]:rounded-none">
+                    <input type="range" min="0" max="255" x-model="lsB" class="flex-1 speck-range speck-range-b">
                     <span class="w-8 text-right font-mono text-sm text-text font-bold" x-text="lsB"></span>
                 </div>
             </div>
 
             <div class="grid grid-cols-2 gap-2">
-                <button @click="lsR=255; lsG=255; lsB=255" class="py-2 bg-overlay border border-hl-med text-sm hover:bg-hl-high transition-colors text-text font-semibold">Pure White</button>
+                <button @click="lsR=255; lsG=255; lsB=255; lsActive = true" class="py-2 bg-overlay border border-hl-med text-sm hover:bg-hl-high transition-colors text-text font-semibold">Pure White</button>
                 <button @click="lsR=0; lsG=0; lsB=0" class="py-2 bg-overlay border border-hl-med text-sm hover:bg-hl-high transition-colors text-text font-semibold">Pure Black</button>
             </div>
 
@@ -571,8 +620,8 @@
         document.addEventListener('alpine:init', () => {
             Alpine.data('speckApp', () => ({
                 isDark: localStorage.getItem('speck_theme') !== 'light',
-                currentVersion: '1.0.0',
-                updateAvailable: false,
+                currentVersion: '1.1.0',
+                updateAvailable: localStorage.getItem('speck_update_applied') !== 'true',
                 showAboutModal: false,
                 aboutContent: null,
                 pwaPrompt: null,
@@ -586,7 +635,7 @@
 
                 // Visualize Spots
                 visualize: false,
-                sensitivity: 500,
+                sensitivity: 100,
 
                 // Overlays & Mapping
                 showGrid: false,
@@ -636,6 +685,7 @@
                         if (res.ok) {
                             const latestVersion = (await res.text()).trim();
                             if (latestVersion && latestVersion !== this.currentVersion) {
+                                localStorage.removeItem('speck_update_applied');
                                 this.updateAvailable = true;
                             }
                         }
@@ -688,6 +738,7 @@
                         });
                     }
                     this.updateAvailable = false;
+                    localStorage.setItem('speck_update_applied', 'true');
                     window.location.reload(true);
                 },
 
